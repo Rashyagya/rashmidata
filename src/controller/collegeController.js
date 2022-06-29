@@ -2,11 +2,8 @@ const { response } = require('express')
 let collegeModel=require('../Models/CollegeModel')
 let {isValid,isValidName}=require('../Validator/validation')
 let mongoose=require('mongoose')
-
-
-
-
-
+const CollegeModel = require('../Models/CollegeModel')
+const InternModel = require('../Models/InternModel')
 
 
 let createCollegeData = async function(req,res){
@@ -45,4 +42,6 @@ let createCollegeData = async function(req,res){
     
      } 
      } 
+
+     
 module.exports.createCollegeData=createCollegeData
