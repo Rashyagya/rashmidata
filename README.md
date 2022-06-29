@@ -30,32 +30,37 @@ Returns the college details for the requested college (Expect a query parameter 
 Returns the list of all interns who have applied for internship at this college.
 The response structure should look like this
 
-
+## Testing
+To test these apis create a new collection in Postman named Project 2 Internship
+Each api should have a new request in this collection
+Each request in the collection should be rightly named. Eg Create college, Get college details etc
+Each member of each team should have their tests in running state
+Refer below sample
 
 A Postman collection and request sample
 
-Response
-Successful Response structure
+## Response
+# Successful Response structure
 {
   status: true,
   data: {
 
   }
 }
-Error Response structure
+# Error Response structure
 {
   status: false,
   message: ""
 }
-Collections samples
-College
+## Collections samples
+# College
 {
     "name" : "iith",
     "fullName" : "Indian Institute of Technology, Hyderabad",
     "logoLink" : "https://functionup.s3.ap-south-1.amazonaws.com/colleges/iith.png",
     "isDeleted" : false
 }
-Intern
+# Intern
    {
     "isDeleted" : false,
     "name" : "Jane Does",
@@ -63,8 +68,13 @@ Intern
     "mobile" : "90000900000",
     "collegeId" : ObjectId("888771129c9ea621dc7f5e3b")
 }
+<<<<<<< HEAD
 Response samples
 College details
+=======
+## Response samples
+# College details
+>>>>>>> 70220048229a1d89249ea64ce8ee2ca6773b8fcf
 {
   "data": {
     "name": "xyz",
@@ -96,4 +106,9 @@ College details
         "mobile": "9898989898"
       }
     ]
+<<<<<<< HEAD
   }
+=======
+  }
+}
+>>>>>>> 70220048229a1d89249ea64ce8ee2ca6773b8fcf
