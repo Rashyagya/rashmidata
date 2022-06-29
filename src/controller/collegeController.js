@@ -26,8 +26,8 @@ let createCollegeData = async function (req, res) {
       if (!isValid(fullName)) return res.status(400).send({ status: false, msg: "fullName is required" })
       if (!isValid(logoLink)) return res.status(400).send({ status: false, msg: "link is required" })
 
-      if (checkNameNotDeleted.length != 0) return res.status(400).send({ status: false, msg: "college name is already present " })
-      if (checkNameifDeleted.length != 0) return res.status(400).send({ status: false, msg: "data with this name already present but it is deleted ,undo the delete" })
+      if (checkNameNotDeleted) return res.status(400).send({ status: false, msg: "college name is already present " })
+      if (checkNameifDeleted) return res.status(400).send({ status: false, msg: "data with this name already present but it is deleted ,undo the delete" })
 
       let saveData = await collegeModel.create(collegeData)
       res.status(201).send({ status: true, Data: saveData })
