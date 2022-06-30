@@ -48,6 +48,7 @@ const getdetails = async function (req, res) {
       console.log(query1)
       if (!isValid(query1)) return res.status(400).send({ status: false, msg: "Dont Left The Query Tag Value Empty" })
       if (Object.keys(query).length == 0) return res.status(400).send({ status: false, msg: "Don't Left Query Params Empty" })
+     
       let getCollegedetails = await collegeModel.findOne({ name: query1 })
       if (getCollegedetails.isDeleted == true) return res.status(400).send({ status: false, msg: "Sorry!!! This College Is Deleted" })
       if (!getCollegedetails) return res.status(400).send({ status: true, msg: "Sorrry!!! This College Name Doesn't Exists" })
