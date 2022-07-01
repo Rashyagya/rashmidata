@@ -9,7 +9,7 @@ const isValidName=(name)=>{
     return true
 }
 const isValidFName=(name)=>{
-    if( /^[-a-zA-Z&-_:,.' ']{1,100}$/.test(name))
+    if( /^[-a-zA-Z_:,.' ']{1,100}$/.test(name))
     return true
 }
 const isValidUrl=(url)=>{
