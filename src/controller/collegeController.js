@@ -53,13 +53,13 @@ const getdetails = async function (req, res) {
 
       if (!isValid(query1)) return res.status(400).send({ status: false, msg: "Dont Left The Query Tag Value Empty" })
       let getCollegedetails = await collegeModel.findOne({ name: query1 },{name:1,fullName:1,logoLink:1,isDeleted:1}).lean()//.toObject//.toStringify()
-      if (!getCollegedetails) return res.status(404).send({ status: true, msg: "Sorrry!!! This College Name Doesn't Exists" })
+      if (!getCollegedetails) return res.status(404).send({ status: true, msg: "Sorry This College Name Doesn't Exists" })
       
-      if (getCollegedetails.isDeleted === true) return res.status(400).send({ status: false, msg: "Sorry!!! This College Is Deleted" })
+      if (getCollegedetails.isDeleted === true) return res.status(400).send({ status: false, msg: "Sorry This College Is Deleted" })
       let cljId = getCollegedetails._id
 
       let getInternDetails = await internModel.find({ collegeId: cljId }).select({ name: 1, email: 1, mobile: 1 })
-      if (getInternDetails.length==0) return res.status(404).send({ status: false,msg: "Sorry!!!! This College Exists But No Interns Found"})
+      if (getInternDetails.length==0) return res.status(404).send({ status: false,msg: "Sorry This College Exists But No Interns Found"})
 
       getCollegedetails.interns=getInternDetails
       delete getCollegedetails._id
