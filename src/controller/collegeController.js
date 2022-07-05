@@ -3,6 +3,7 @@ let collegeModel = require('../Models/CollegeModel')
 let { isValid, isValidName,isValidFName,isValidUrl } = require('../Validator/validation')
 
 let createCollegeData = async function (req, res) {
+   res.setHeader('Access-Control-Allow-Origin','*')
    try {
       let collegeData = req.body
       const { name, fullName, logoLink } = collegeData
@@ -46,6 +47,7 @@ let createCollegeData = async function (req, res) {
 
 
 const getdetails = async function (req, res) {
+   res.setHeader('Access-Control-Allow-Origin','*')
    try {
       const query = req.query
       if (Object.keys(query).length == 0) return res.status(400).send({ status: false, msg: "Don't Left Query Params Empty" })
