@@ -1,34 +1,44 @@
 const jwt = require("jsonwebtoken");
 const blogModel = require("../models/blogModel");
-const authorModel = require("../models/authorModel");
 
-//--------------------------------- AUTHENTICATION MIDDLEWARE -------------------------------------------------------------------------------------------
+
+//--------------------------------- AUTHENTICATION MIDDLEWARE ------------------------------------------------------------------------
 
 const authentication = function (req, res, next) {
   try {
-    let token = req.headers["x-api-key"];
-    if (!token) token = req.headers["X-api-key"];
-    if (!token) return res.send({ status: false, msg: "token must be present" });    //If no token is present in the request header return error
-    console.log(token);
+    let token = req.headers["x-api-key"];         //Getting token from header
+    if (!token) token = req.headers["X-api-key"];     //checking token with Uppercase
+    if (!token) return res.status(401).send({ status: false, msg: "token must be present" });    //If neither condition satisfies & no token is present in the request header return error
 
-    let decodedToken = jwt.verify(token, "BloggingWebsite");   // If a token is present then decode the token with verify function
-    if (!decodedToken)                                         // Input 1 is the token to be decoded and Input 2 was same as generated earlier
-      return res.send({ status: false, msg: "token is invalid" });
+  console.log(token); 
+  
+    let decodedToken = jwt.verify(token, "BloggingWebsite", function(error, decodedToken){
+      if(error)
+      return res.status(401).send({ status: false, msg: "token is invalid" });
+      
+      req.loggedInAuthorId = decodedToken._id
+      //console.log(decodedToken._id)
+      //console.log(req.loggedInAuthorId)
 
-    req.loggedInAuthorId = decodedToken._id       // stroing decoded token id in req.loggedInAuthorId
-
+    });  
+    next()            //if token is present next() will call the respective API            
 
   } catch (error) {
-    res.status(500).send({ status: false, Error: error.message })
+    return res.status(500).send({ status: false, Error: error.message })
   }
-  next()
 };
 
-//--------------------------------- AUTHORISATION MIDDLEWARE -------------------------------------------------------------------------------------------
+
+
+
+
+//--------------------------------- AUTHORISATION MIDDLEWARE ----------------------------------------------------------------------------------
 
 const authorisation = async function (req, res, next) {
 
   try {
+     //let token = req.headers["x-api-key"];
+     //let authordata = jwt.verify(token, "BloggingWebsite");
 
     let userToBeModified = req.params.blogId
     console.log(userToBeModified)
@@ -37,14 +47,14 @@ const authorisation = async function (req, res, next) {
     //let userLoggedIn = decodedToken._id
     console.log(blog)
     console.log(req.loggedInAuthorId)
-    if (blog.authorId == req.loggedInAuthorId) {     //We have stored decoded token into req.loggedInAuthorId and comparing it with blog.authorId
-      next()
-    } else {
-      res.status(403).send({ status: false, msg: 'Author logged is not allowed to modify the requested data' })
+    if (blog.authorId != req.loggedInAuthorId) {    //We have stored decoded token into req.loggedInAuthorId and comparing it with blog.authorId
+      return res.status(403).send({ status: false, msg: 'Author logged is not allowed to modify the requested data' })
     }
+    next()
   } catch (err) {
     return res.status(500).send({ status: false, msg: err.message })
   }
+
 
 }
 

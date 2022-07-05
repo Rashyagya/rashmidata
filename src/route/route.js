@@ -3,8 +3,8 @@ const router = express.Router();
 const author = require("../controllers/authorController");
 const blog = require("../controllers/blogController");
 const MW = require("../Middleware/auth")
-
-
+ 
+ 
 //---------------------- CREATE and GET Author ------------------------------------------
 router.post("/authors", author.createAuthor)
 router.get("/authors", author.getAuthor)
@@ -25,7 +25,7 @@ router.put("/blogs/:blogId", MW.authentication, MW.authorisation, blog.updateBlo
 //---------------------- Delete blog using JWT ------------------------------------------
 
 router.delete("/blogs/:blogId", MW.authentication, MW.authorisation, blog.deleteBlog)
-router.delete("/blogs", MW.authentication, MW.authorisation, blog.deleteQueryParams)
+router.delete("/blogs", MW.authentication, blog.deleteQueryParams)
 
 
 
