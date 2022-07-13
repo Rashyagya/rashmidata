@@ -1,0 +1,90 @@
+let updateReview = async function (req, res) {
+    try {
+        let bookId = req.params.bookId
+        if (!validator.isObjectId(bookId)) {
+            return res.status(400).send({ status: false, message: "Enter a correct book ObjectId", })
+        }
+        let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!book) {
+            return res.status(404).send({ status: false, message: "This Book does not exist. Please enter correct Book ObjectId", })
+        }
+
+        let reviewId = req.params.reviewId
+
+        let upreview = req.body
+        let { review } = upreview
+
+        if (!validator.isObjectId(reviewId)) {
+            return res.status(400).send({ status: false, message: "Enter a correct review ObjectId", })
+        }
+        let reviewss = await reviewModel.findOne({ _id: reviewId, bookId: book._id, isDeleted: false })
+        if (!reviewss) return res.status(404).send({ status: false, message: "This review does not exist. Please enter correct review ObjectId", })
+
+
+        if (validator.isBodyExist(upreview)){
+            return res.status(400).send({ status: false, message: " Please provide review details to Update", });
+        }
+        if (review.length==0 || review) {
+            console.log(review, typeof (review))
+            let A = upreview.review.trim()
+            // let pattern = /^[A-Za-z]{1,}$/
+            // if(!pattern.test(upreview.review)){
+            //     return res.status(400).send({ status: false, message: "review input can't be empty." }) 
+            // }
+            // console.log(upreview.review,upreview.hasOwnProperty("review"))
+            if ((typeof (upreview.review) == "string") && (!A.length)) {
+                return res.status(400).send({ status: false, message: "review should be string." })
+            }
+            // if (typeof (upreview.review) != "string") {
+            //     return res.status(400).send({ status: false, message: "review should be string." })
+            // }
+            // if (upreview.review.trim().length == 0 ) {
+            //     return res.status(400).send({ status: false, message: "review input can't be empty." })
+            // }
+
+        } console.log(upreview.review.trim().length)
+        if (upreview.rating) {
+            if (typeof (upreview.rating) != "number") {
+                return res.status(400).send({ status: false, message: "rating should be a number." })
+            }
+            if (upreview.rating < 1 || upreview.rating > 5) {
+                return res.status(400).send({ status: false, message: "rating should be between 1 to 5" })
+            }
+        }
+        if (upreview.reviewedBy) {
+            if (typeof (upreview.reviewedBy) != "string") {
+                return res.status(400).send({ status: false, message: "reviewedBy should be string." })
+            }
+            if (upreview.reviewedBy.trim() == "") {
+                return res.status(400).send({ status: false, message: "reviewedBy name input can't be empty." })
+            }
+            if (validator.containNumbers(upreview.reviewedBy)) {
+                return res.status(400).send({ status: false, message: "reviewedBy name can't contain numbers." })
+
+            }
+        }
+
+        let reviews = await reviewModel.findOneAndUpdate({ _id: reviewId }, upreview, { new: true })
+        let bookWithReviews = {
+            _id: book._id,
+            title: book.title,
+            excerpt: book.excerpt,
+            userId: book.userId,
+            category: book.category,
+            subcategory: book.subcategory,
+            isDeleted: book.isDeleted,
+            reviews: book.reviews,
+            releasedAt: book.releasedAt,
+            createdAt: book.createdAt,
+            updatedAt: book.updatedAt,
+            reviewsData: reviews
+
+        }
+        res.status(200).send({ status: true, message: "success", data: bookWithReviews })
+
+    } catch (err) {
+        res.status(500).send({ status: false, message: err.message })
+
+    }
+
+}

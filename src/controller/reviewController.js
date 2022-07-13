@@ -80,7 +80,7 @@ let updateReview = async function (req, res) {
             if (typeof (upreview.review) != "string") {
                 return res.status(400).send({ status: false, message: "review should be string." })
             }
-            if (upreview.review.trim() == "") {
+            if (upreview.review.trim() == "" ) {
                 return res.status(400).send({ status: false, message: "review input can't be empty." })
             }
         }
