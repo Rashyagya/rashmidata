@@ -5,6 +5,7 @@ const user = require("../controller/userController")
 const review = require("../controller/reviewController")
 const MW = require("../Middleware/auth")
 
+
 //-------------------User Api-----------------------------------------//----------------------------//----------
 router.post("/register",user.userRegister)
 
