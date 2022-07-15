@@ -3,7 +3,7 @@ const bookModel = require("../models/bookModel");
 const validator = require("../validator/validator");
 const reviewModel = require("../models/reviewModel");
 const moment = require("moment")
-
+const AWS = require("../controller/aws")
 //-----------------------------------post Api (create book)-------------------------------------------------------------------
 
 const createBooks = async function (req, res) {
@@ -101,6 +101,18 @@ const createBooks = async function (req, res) {
         //validation for releasedAt
         bookData.releasedAt = moment().toISOString()
 
+
+        //inclusion of aws
+
+        let files= req.files
+        if(!files || files.length==0){
+            return res.status(400).send({ msg: "No file found" })
+        }
+         
+        let uploadedFileURL= await AWS.uploadFile( files[0] )
+
+        bookData.bookCover = uploadedFileURL
+
         let saveBooks = await bookModel.create(bookData);
         res.status(201).send({ status: true, message: "success", data: saveBooks });
     } catch (err) {
@@ -171,7 +183,7 @@ const getBooksById = async (req, res) => {
             return res.status(404).send({ status: false, message: "Book already deleted!" });
         }
 
-        let reviews = await reviewModel.find({ bookId: bookId })
+        let reviews = await reviewModel.find({ bookId: bookId ,isdeleted:false})
 
         let bookWithReviews = {
             _id: findbook._id,
