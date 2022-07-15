@@ -58,7 +58,7 @@ let userRegister = async function (req, res) {
         if (!validator.isValidMobile(userBody.phone)) return res.status(400).send({ status: false, msg: "Pls Enter Valid PAN India Number" })
 
         let isPhoneExist = await userModel.findOne({ phone: userBody.phone })
-        if (isPhoneExist) return res.status(400).send({ status: false, message: "phone number already exists, plaease give another one." })
+        if (isPhoneExist) return res.status(400).send({ status: false, message: "phone number already exists, please give another one." })
 
         //validation for email
         if (!Object.keys(userBody).includes("email")) {
