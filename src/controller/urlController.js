@@ -8,19 +8,23 @@ const createUrl = async function (req, res) {
         const baseUrl = 'http:localhost:3000'
         let body = req.body;
         let { longUrl } = body;
-        if (Object.keys(body) == 0) return res.status(400).send({ status: false, message: 'please enter body' })
-<<<<<<< HEAD
-        if (!('longUrl' in body)) return res.status(400).send({ status: false, message: 'longUrl is reuired' })
-        if (await urlModel.findOne({ longUrl }))
-            return res.status(400).send({ status: false, message: 'url already exists in database' })
-=======
-        //if (!('longUrl' in body)) return res.status(400).send({ status: false, message: 'longUrl is reuired' })
-        if (await urlModel.findOne({ longUrl })) return res.status(400).send({ status: false, message: 'url already exists in database' })
->>>>>>> 8ddca9e1d262bcbb0912ae364c6f844de3205187
+        if (Object.keys(body) == 0) return res.status(400).send({ status: false, message: "please enter body" })
+
+        if (body.longUrl.trim().length == 0) 
+            return res.status(400).send({ status: false, message: "Enter long URL"})
+
+            let urlReg = /^(ftp|http|https):\/\/[^ "]+$/;
+            if (!urlReg.test(body.longUrl)) {
+                return res.status(400).send({ status: false, message: "long URL is invalid " });
+            }
+            
+
+        if (await urlModel.findOne({ longUrl })) 
+            return res.status(400).send({ status: false, message: "url already exists in database" })
     
     
         if (!validUrl.isUri(baseUrl)) {
-          return res.status(400).send({ status: false, message: 'invalid base URL' })
+          return res.status(400).send({ status: false, message: "invalid base URL" })
         }
     
         const urlCode = shortid.generate();
@@ -44,7 +48,7 @@ const createUrl = async function (req, res) {
           let urlCode = req.params.urlCode
           let url = await urlModel.findOne({ urlCode})
           if (!url) {
-            return res.status(404).send({ status: false, message: 'No URL found' })
+            return res.status(404).send({ status: false, message: "No URL found"})
           }
           //return res.status(302).redirect(url.longUrl)
           return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})
