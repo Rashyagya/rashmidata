@@ -1,6 +1,6 @@
 
 const mongoose = require('mongoose')
-const validUrl = require('valid-url')
+//const validUrl = require('valid-url')
 
 
 const urlSchema = new mongoose.Schema({
@@ -14,7 +14,7 @@ const urlSchema = new mongoose.Schema({
     longUrl :{
         type: String,
         required: true,
-        validUrl: true
+      
 
     },
     shortUrl :{
