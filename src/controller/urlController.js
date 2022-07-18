@@ -1,6 +1,7 @@
 const urlModel = require("../model/urlModel")
 const validUrl = require('valid-url')
 const shortid = require('shortid')
+const {isValid,isValidBody,isValidUrl}= require("../validation/validation")
 
 
 const createUrl = async function (req, res) {
@@ -8,19 +9,16 @@ const createUrl = async function (req, res) {
         const baseUrl = 'http:localhost:3000'
         let body = req.body;
         let { longUrl } = body;
-        if (Object.keys(body) == 0) return res.status(400).send({ status: false, message: "please enter body" })
 
-        if (body.longUrl.trim().length == 0) 
-            return res.status(400).send({ status: false, message: "Enter long URL"})
+        // if (Object.keys(body) == 0) return res.status(400).send({ status: false, message: 'please enter body' })
 
-            let urlReg = /^(ftp|http|https):\/\/[^ "]+$/;
-            if (!urlReg.test(body.longUrl)) {
-                return res.status(400).send({ status: false, message: "long URL is invalid " });
-            }
-            
+        if(!isValidBody(body)) return res.status(400).send({ status:false,message:"Body Should not be empty" }) 
+        if(!("longUrl" in body)) return res.status(400).send({ status:false,message:"LongUrl Is required" })
 
-        if (await urlModel.findOne({ longUrl })) 
-            return res.status(400).send({ status: false, message: "url already exists in database" })
+        if(!isValid(longUrl)) return res.status(400).send({ status:false, message: "LongUrl should not be empty" })
+        if(!isValidUrl(longUrl)) return res.status(400).send({ status:false, message: `"${longUrl}" is not a valid url` })
+
+        if (await urlModel.findOne({ longUrl })) return res.status(400).send({ status: false, message: `"${longUrl}" already exist in the database` })
     
     
         if (!validUrl.isUri(baseUrl)) {
@@ -34,7 +32,8 @@ const createUrl = async function (req, res) {
           const shortUrl = baseUrl + '/' + urlCode
           body.shortUrl = shortUrl
         }
-        let saveData = await urlModel.create(body)
+        let Data = await urlModel.create(body)
+        let saveData= await urlModel.findOne({longUrl:longUrl}).select({_id:0,createdAt:0,updatedAt:0,__v:0})
         return res.status(201).send({ status: true, data: saveData })
     
       } catch (error) {
@@ -46,12 +45,15 @@ const createUrl = async function (req, res) {
     const getUrl = async function (req, res) {
         try {
           let urlCode = req.params.urlCode
-          let url = await urlModel.findOne({ urlCode})
+
+          if(!shortid.isValid(urlCode)) return res.status(400).send({status:false,message:"Pls Enter Urlcode In valid Format"})
+    
+          let url = await urlModel.findOne({ urlCode })
           if (!url) {
-            return res.status(404).send({ status: false, message: "No URL found"})
+            return res.status(404).send({ status: false, message: 'No such urlCode found' })
           }
-          //return res.status(302).redirect(url.longUrl)
-          return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})
+            return res.status(302).redirect(url.longUrl)
+          //return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})
           
         }
         catch (error) {
