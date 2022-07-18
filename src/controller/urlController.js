@@ -9,9 +9,14 @@ const createUrl = async function (req, res) {
         let body = req.body;
         let { longUrl } = body;
         if (Object.keys(body) == 0) return res.status(400).send({ status: false, message: 'please enter body' })
+<<<<<<< HEAD
         if (!('longUrl' in body)) return res.status(400).send({ status: false, message: 'longUrl is reuired' })
         if (await urlModel.findOne({ longUrl }))
             return res.status(400).send({ status: false, message: 'url already exists in database' })
+=======
+        //if (!('longUrl' in body)) return res.status(400).send({ status: false, message: 'longUrl is reuired' })
+        if (await urlModel.findOne({ longUrl })) return res.status(400).send({ status: false, message: 'url already exists in database' })
+>>>>>>> 8ddca9e1d262bcbb0912ae364c6f844de3205187
     
     
         if (!validUrl.isUri(baseUrl)) {
@@ -41,9 +46,9 @@ const createUrl = async function (req, res) {
           if (!url) {
             return res.status(404).send({ status: false, message: 'No URL found' })
           }
-          else{
-           return res.status(302).send.redirect(url.longUrl)
-          }
+          //return res.status(302).redirect(url.longUrl)
+          return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})
+          
         }
         catch (error) {
           return res.status(500).send({ status: false, message: error.message });
