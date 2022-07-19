@@ -49,15 +49,14 @@ const createUrl = async function (req, res) {
         try {
           let urlCode = req.params.urlCode
 
-          if(!shortid.isValid(urlCode)) 
-          return res.status(400).send({status:false,message:"Pls Enter valid urlcode Format"})
+          if(!shortid.isValid(urlCode)) return res.status(400).send({status:false,message:"Pls Enter valid urlCode Format"})
     
           let url = await urlModel.findOne({ urlCode })
           if (!url) {
             return res.status(404).send({ status: false, message: 'No such urlCode found' })
           }
-            return res.status(302).redirect(url.longUrl)
-          //return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})  //its also working
+          return res.status(302).redirect(url.longUrl)
+          //return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})
           
         }
         catch (error) {
