@@ -56,7 +56,7 @@ const createUrl = async function (req, res) {
             return res.status(404).send({ status: false, message: 'No such urlCode found' })
           }
           return res.status(302).redirect(url.longUrl)
-          //return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})
+          //return res.status(302).send({message: `Found. redirected to ${url.longUrl}`})  //(it also working)
           
         }
         catch (error) {
@@ -64,5 +64,5 @@ const createUrl = async function (req, res) {
         }
       };
 
-     module.exports.createUrl=createUrl
-     module.exports.getUrl=getUrl
+     module.exports.createUrl = createUrl
+     module.exports.getUrl = getUrl
