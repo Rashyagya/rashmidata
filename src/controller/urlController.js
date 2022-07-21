@@ -32,13 +32,20 @@ const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
 
 
 
-
+const baseUrl = 'http:localhost:3000'
 
 const createUrl = async function (req, res) {
     try {
-        const baseUrl = 'http:localhost:3000'
+      
         let body = req.body;
-        let { longUrl } = body;
+        let longUrl= req.body.length.trim();
+
+        if (!longUrl || !longUrl.trim()) {
+          return res
+            .status(400)
+            .send({ status: false, msg: "Please Enter the Url." });
+        }
+      
 
         if(!isValidBody(body)) return res.status(400).send({ status:false,message:"Body Should not be empty" }) 
         if(!("longUrl" in body)) return res.status(400).send({ status:false,message:"Long Url Is required" })
