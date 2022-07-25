@@ -12,7 +12,7 @@ router.post("/login" , user.loginUser)
 
 router.get("/user/:userId/profile",MW.authentication,user.getUser)
 
-// router.put("PUT /user/:userId/profile",MW.authentication,user.updateUser)
+router.put("/user/:userId/profile",MW.authentication,user.updateUser)
 
 
 

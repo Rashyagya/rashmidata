@@ -20,7 +20,7 @@ const isValidInputValue = function (data) {
 /* ---------------------------------------ObjectId format-------------------------------------- */
 
 const isValidObjectId = function (data) {
-  return (mongoose.Types.ObjectId.isValid(stringId))
+  return (mongoose.Types.ObjectId.isValid(data))
 }
 
 /* ------------------------------------string only------------------------------------------- */

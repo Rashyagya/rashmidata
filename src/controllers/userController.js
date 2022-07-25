@@ -260,38 +260,122 @@ const getUser = async function (req, res) {
   }
 };
 
-// const updateUser = async function (req, res) {
-//   try {
-//     let data = req.body
 
-//     if (!Validator.isValidBody(data)) {
-//       return res.status(400).send({
-//         status: false,
-//         message: "User data is required to update",
-//       });
-//     }
-
-//     let userId = req.params.userId
-
-//     if (!Validator.isValidObjectId(userId)) {
-//       return res.status(401).send({ status: false, msg: "enter valid UserId" });
-//     }
-
-//     if (req.idDecoded != userId.toString()) {
-//       return res.status(401).send({ status: false, msg: "you aren't authorized" });
-//     }
-
-//     if(data.fname)
+//-----------------------update user---------------------------
 
 
+const updateUser = async function (req, res) {
+  try {
+    let data = JSON.parse(JSON.stringify(req.body));
+    let files = req.files;
+    console.log(data)
+    if (!Validator.isValidBody(data)) {
+      return res.status(400).send({
+        status: false,
+        message: "User data is required to update",
+      });
+    }
 
-//   } catch (err) {
-//     res.status(500).send({ err: err.message });
-//   }
-// };
+    let userId = req.params.userId
+
+    if (!Validator.isValidObjectId(userId)) {
+      return res.status(401).send({ status: false, msg: "enter valid UserId" });
+    }
+
+    if(!await userModel.findOne({_id:userId,isDeleted:false})){
+      return res.status(401).send({ status: false, msg: "this user doesn't exist" });
+    }
+
+    if (req.idDecoded != userId.toString()) {
+      return res.status(401).send({ status: false, msg: "you aren't authorized" });
+    }
+
+    if(data.fname){
+      if(data.fname.trim().length == 0){
+        return res.status(400).send({status: false,message: "fname can't be empty"});
+      }
+      if (!Validator.isValidOnlyCharacters(data.fname)) {
+        return res.status(400).send({status: false,message: "fname must be alphabets"});
+      }
+    }
+    if(data.lname){
+      if(data.lname.trim().length == 0){
+        return res.status(400).send({status: false,message: "lname can't be empty"});
+      }
+      if (!Validator.isValidOnlyCharacters(data.lname)) {
+        return res.status(400).send({status: false,message: "lname must be alphabets"});
+      }
+    }
+    if(data.email){
+      if(data.email.trim().length == 0){
+        return res.status(400).send({status: false,message: "email can't be empty"});
+      }
+      if (!Validator.isValidInputValue(data.email)) {
+        return res.status(400).send({status: false,message: "email must be alphabets"});
+      }
+    }
+    if(data.email){
+      if(data.email.trim().length == 0){
+        return res.status(400).send({status: false,message: "email can't be empty"});
+      }
+      if (!Validator.isValidInputValue(data.email)) {
+        return res.status(400).send({status: false,message: "email is not valid"});
+      }
+      if(await userModel.findOne({email:data.email})){
+        return res.status(400).send({status: false,message: "email already exists"});
+      }
+    }
+    if(files.length===1){
+      if (!Validator.isValidImageType(files[0].mimetype)) {
+        return res.status(400).send({
+          status: false,
+          message: "Only images can be uploaded (jpeg/jpg/png)",
+        });
+      }
+      let url = await uploadFile(files[0])
+      data.profileImage = url
+    }
+    if(data.phone){
+      if(data.phone.trim().length == 0){
+        return res.status(400).send({status: false,message: "phone can't be empty"});
+      }
+      if (!Validator.isValidInputValue(data.phone)) {
+        return res.status(400).send({status: false,message: "phone is not valid"});
+      }
+      if(await userModel.findOne({phone:data.phone})){
+        return res.status(400).send({status: false,message: "phone already exists"});
+      }
+    }
+    if(data.password){
+      if(data.email.trim().length == 0){
+        return res.status(400).send({status: false,message: "email can't be empty"});
+      }
+      if (!Validator.isValidPassword(data.password)) {
+        return res.status(400).send({status: false,message:"Password should be of 8 to 15 characters"});
+      }
+      let encryptedPassword = await bcrypt.hash(data.password, 10)
+      data.password = encryptedPassword;
+
+    }
+    console.log(data)
+
+    let updatedData = await userModel.findOneAndUpdate({_id:userId},data,{new:true})
+    console.log(updatedData)
+    res.status(200).send({
+      status: true,
+      message: 'Success',
+      data: updatedData
+    })
+
+
+
+  } catch (err) {
+    res.status(500).send({ err: err.message });
+  }
+};
 
 
 
 
 
-module.exports = { createUser, loginUser, getUser };
+module.exports = { createUser, loginUser, getUser, updateUser };
