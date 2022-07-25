@@ -2,13 +2,15 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const router = require('./route/route');
+const multer = require("multer")
+
 const app = express();
 
 
 
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
-
+app.use(bodyParser.json());
+app.use(multer().any())
 
 mongoose.connect("mongodb+srv://Rashmivishwakarma:rashmi1996@cluster0.m1asu.mongodb.net/group22Database?retryWrites=true&w=majority", {
     useNewUrlParser: true

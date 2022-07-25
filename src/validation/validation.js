@@ -20,16 +20,7 @@ const isValidInputValue = function (data) {
 /* ---------------------------------------ObjectId format-------------------------------------- */
 
 const isValidObjectId = function (data) {
-  let stringId = data.toString().toLowerCase();
-  if (!ObjectId.isValid(stringId)) {
-      return false;
-  }
-
-  var result = new ObjectId(stringId);
-  if (result.toString() != stringId) {
-      return false;
-  }
-  return true;
+  return (mongoose.Types.ObjectId.isValid(stringId))
 }
 
 /* ------------------------------------string only------------------------------------------- */
@@ -39,9 +30,8 @@ const isValidOnlyCharacters = function (data) {
 
 /* --------------------------------------email format---------------------------------------- */
 function isValidEmail(data) {
-  if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data))
-    return false
-  else return true
+  return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data))
+
 }
 
 /* ----------------------------------------phone format-------------------------------------- */
@@ -53,10 +43,12 @@ function isValidPhone(data) {
 
 /* ------------------------------------------password format--------------------------------- */
 function isValidPassword(data) {
-  const schema = new passwordValidator();
-  schema.is().min(8).max(15).digits(1);
-  if (!schema.validate(data))
-    return false
+  // const schema = new passwordValidator();
+  // schema.is().min(8).max(15).digits(1);
+  // if (!schema.validate(data))
+  //   return false
+  if(data.length>=8&&data.length<=15)
+  return true
 }
 
 /* --------------------------------------file should be image---------------------------------- */
