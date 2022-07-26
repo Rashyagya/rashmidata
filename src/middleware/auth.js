@@ -7,18 +7,13 @@ const Validator = require("../validation/validation");
 const authentication = async function (req, res, next) {
   try {
     let token = req.header("Authorization")
-    // console.log(token)
+    if(!token) return res.status(400).send({status:false,message:"Token is required"})
     token = token.replace("Bearer ","")
-    // console.log(token)
-      jwt.verify(token,"group-22-productManangement",function(err,decodedToken){
-      if(err) return res.status(401).send({ status: false, msg: "invalid Token" });
+    jwt.verify(token,"group-22-productManangement",function(err,decodedToken){
+      if(err) return res.status(401).send({ status: false, message: "invalid Token" });
       req.idDecoded = decodedToken.userId
+      next()
     })
-    // console.log(decodedToken)
-
-    
-    console.log(req.idDecoded)
-    next()
   }
   catch (err) {
     return res.status(500).send({ err: err.message })
