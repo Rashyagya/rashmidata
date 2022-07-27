@@ -1,11 +1,9 @@
-const passwordValidator = require("password-validator");
-const { default: mongoose } = require("mongoose")
+const mongoose = require('mongoose')
 
 /* --------------------blank body---------------------------------------------------------- */
 function isValidBody(data) {
-  if (Object.keys(data).length == 0)
-    return false
-  else return true
+  return (Object.keys(data).length == 0)
+
 }
 
 /* ----------------------------------type/input value--------------------------------------- */
@@ -35,8 +33,8 @@ function isValidEmail(data) {
 
 /* ----------------------------------------phone format-------------------------------------- */
 function isValidPhone(data) {
-  if(/^[0]?[6789]\d{9}$/.test(data))
-  return true
+    return(/^[0]?[6789]\d{9}$/.test(data))
+
 }
 
 /* ------------------------------------------password format--------------------------------- */
