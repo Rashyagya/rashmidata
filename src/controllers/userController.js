@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const { uploadFile } = require("../aws/aws");
 const jwt = require("jsonwebtoken");
 const Validator = require("../validation/validation");
-/* ------------------------------------------------POST/register-------------------------------------------------------- */
+
+//----------------------------------------POST Api (user register)---------------------------------------//
 
 const createUser = async function (req, res) {
   try {
@@ -29,7 +30,7 @@ const createUser = async function (req, res) {
     if (!Validator.isValidOnlyCharacters(fname)) {
       return res.status(400).send({
         status: false,
-        message: "last name should contain only alphabets"
+        message: "first name should contain only alphabets"
       });
     }
 
@@ -78,7 +79,7 @@ const createUser = async function (req, res) {
     if (!Validator.isValidPhone(phone)) {
       return res.status(400).send({
         status: false,
-        message: "give a valid mobile number",
+        message: "give a  PAN India mobile number",
       });
     }
     if (await userModel.findOne({ phone })) {
@@ -169,7 +170,7 @@ const createUser = async function (req, res) {
     }
   };
 
-  /* ----------------------------------------------POST/login---------------------------------------------------------*/
+  //---------------------------------------POST/login--------------------------------------------------//
 
   const loginUser = async function (req, res) {
     try {
@@ -200,8 +201,7 @@ const createUser = async function (req, res) {
         });
       }
 
-      let hash = await userModel
-        .findOne({ email: email })
+      let hash = await userModel.findOne({ email: email })
       if (hash == null) {
         return res
           .status(400)
@@ -235,6 +235,7 @@ const createUser = async function (req, res) {
     }
   };
 
+//-----------------------------------------Get Api(get user by userId)-------------------------------------//
 
   const getUser = async function (req, res) {
     try {
@@ -258,7 +259,7 @@ const createUser = async function (req, res) {
   };
 
 
-  //-----------------------update user---------------------------
+  //------------------------------------Put Api(update user)------------------------------------------//
 
 
   const updateUser = async function (req, res) {
@@ -345,7 +346,7 @@ const createUser = async function (req, res) {
       }
       if (data.password) {
         if (data.email.trim().length == 0) {
-          return res.status(400).send({ status: false, message: "email can't be empty" });
+          return res.status(400).send({ status: false, message: "password can't be empty" });
         }
         if (!Validator.isValidPassword(data.password)) {
           return res.status(400).send({ status: false, message: "Password should be of 8 to 15 characters" });

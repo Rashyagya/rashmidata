@@ -1,8 +1,8 @@
 const express = require('express');
-const router= express.Router()
+const router = express.Router()
 const user = require("../controllers/userController")
 const MW = require("../Middleware/auth")
-//const aws = require("aws-sdk")
+
 
 //-------------------------------------User------------------------------------------------//
 
