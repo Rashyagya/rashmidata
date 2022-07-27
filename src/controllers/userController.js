@@ -8,6 +8,7 @@ const Validator = require("../validation/validation");
 const createUser = async function (req, res) {
   try {
     let data = JSON.parse(JSON.stringify(req.body));
+    console.log(data)
     let files = req.files;
     let { fname, lname, email, phone, password, address } = data;
 
