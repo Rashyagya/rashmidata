@@ -20,12 +20,11 @@ router.put("/user/:userId/profile",MW.authentication,user.updateUser)
 
 router.post("/products", product.createProduct)
 
-// router.get("/products/:productId", product.getProductById)
+router.get("/products" , product.getProduct)
 
+ router.get("/products/:productId", product.getProductById)
 
-
-
-
+router.delete("/products/:productId" , product.deleteProducts)
 
 
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const userSchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
 
     title: {
         type : String,
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     availableSizes: {
         type: [String],
         required: true,
-        // enum: ["S", "XS", "M", "X", "L", "XXL", "XL"]
+        //enum: ["S", "XS","M","X", "L","XXL", "XL"]
     },
 
     installments: {
@@ -69,4 +69,4 @@ const userSchema = new mongoose.Schema({
 
  { timestamps: true });
 
-    module.exports = mongoose.model('products', userSchema);  
+    module.exports = mongoose.model('products', productSchema);  
