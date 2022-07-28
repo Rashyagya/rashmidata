@@ -246,12 +246,6 @@ const deleteProducts = async function(req, res){
   let deletedData = await productModel.findOneAndUpdate({_id:productId},{isDeleted:true,deletedAt:new Date()},{new:true})
   return res.status(200).send({status: true, message: "success", data: deletedData})
 
-<<<<<<< HEAD
-
-
-module.exports = {createProduct};
-=======
 }
 
 module.exports = { createProduct,getProduct ,getProductById, deleteProducts };
->>>>>>> e745c6c96960c7b0c4b54a52c3fbaa37c2be3c8d
