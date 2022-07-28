@@ -100,7 +100,6 @@ const createProduct = async function (req, res) {
           message: "available sizes should be among S,XS,M,X,L,XXL,XL"
         });
       }
-      data.availableSizes = sizeArr
     }
     else {
       for (let i = 0; i < sizeArr.length; i++) {
@@ -111,7 +110,6 @@ const createProduct = async function (req, res) {
           });
         }
       }
-      data.availableSizes = sizeArr
     }
 
     if (data.installments) {
@@ -145,22 +143,6 @@ const createProduct = async function (req, res) {
     //uploading the photo
     let fileUrl = await uploadFile(files[0]);
     data.productImage = fileUrl;
-
-    // validation for style
-    if(data.style){
-      if(typeof data.style != "string"){
-        return res.status(400).send({
-          status: false,
-          message: "Style can't be "+typeof data.style,
-        });
-      }
-      if(typeof data.style == "string"&& data.style.trim().length===0){
-        return res.status(400).send({
-          status: false,
-          message: "style can't be empty",
-        });
-      }
-    }
 
     let savedData = await productModel.create(data);
     return res.status(201).send({
