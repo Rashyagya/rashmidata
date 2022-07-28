@@ -1,12 +1,9 @@
-const passwordValidator = require("password-validator");
 const mongoose = require('mongoose')
-const ObjectId=require("mongoose").Types.ObjectId
 
 /* --------------------blank body---------------------------------------------------------- */
 function isValidBody(data) {
-  if (Object.keys(data).length == 0)
-    return false
-  else return true
+  return (Object.keys(data).length == 0)
+
 }
 
 /* ----------------------------------type/input value--------------------------------------- */
@@ -36,17 +33,12 @@ function isValidEmail(data) {
 
 /* ----------------------------------------phone format-------------------------------------- */
 function isValidPhone(data) {
-    if(/^[0]?[6789]\d{9}$/.test(data))
-    return true
-  else return false
+    return(/^[0]?[6789]\d{9}$/.test(data))
+
 }
 
 /* ------------------------------------------password format--------------------------------- */
 function isValidPassword(data) {
-  // const schema = new passwordValidator();
-  // schema.is().min(8).max(15).digits(1);
-  // if (!schema.validate(data))
-  //   return false
   if(data.length>=8&&data.length<=15)
   return true
 }
@@ -67,10 +59,9 @@ const isValidAddress = function (data) {
 
 /* ---------------------------------------pincode format------------------------------------------- */
 const isValidPincode = function(data){
-  if ((/^[1-9][0-9]{5}$/.test(data))) {
+  if ((/^[1-9][0-9]{5}$/.test(data)))
     return true
-  }
-  return false
+
 }
 
 
