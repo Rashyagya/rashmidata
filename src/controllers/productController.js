@@ -186,7 +186,7 @@ const getProduct = async function (req, res) {
       let nameIncludes = new RegExp(`${filter.name}`, "gi");
 
       if (name) {
-       filter.description = nameIncludes;
+       filter.title = nameIncludes;
       }
       if(priceSort) {
         filter.priceSort = { $all: priceSort}
