@@ -22,6 +22,8 @@ router.post("/products", product.createProduct)
 
 // router.get("/products/:productId", product.getProductById)
 
+router.put("/products/:productId", product.updateProductById)
+
 
 
 
