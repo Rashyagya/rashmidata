@@ -59,10 +59,9 @@ const isValidAddress = function (data) {
 
 /* ---------------------------------------pincode format------------------------------------------- */
 const isValidPincode = function(data){
-  if ((/^[1-9][0-9]{5}$/.test(data))) {
+  if ((/^[1-9][0-9]{5}$/.test(data)))
     return true
-  }
-  return false
+
 }
 
 

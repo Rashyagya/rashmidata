@@ -181,6 +181,60 @@ const createProduct = async function (req, res) {
   }
 };
 
+//---------------------------------------Get Api(getProduct by Filter)-------------------------------------------//
+
+const getProduct = async function (req, res) {
+  try {
+    let filter = req.query;
+    let filters = { isDeleted: false };
+    if (filter) {
+      const { name, size, priceSort } = filter;
+
+      let nameIncludes = new RegExp(`${filter.name}`, "gi");
+
+      if (name) {
+       filter.title = nameIncludes;
+      }
+      if(priceSort) {
+        filter.priceSort = { $all: priceSort}
+      }
+      if (size) {
+        const sizeArr = size.trim().split(",").map((x) => x.trim());
+        filter.availableSizes = { $all: sizeArr };
+      }
+    }
+    let data = await productModel.find(filter).sort({ price: filter.priceSort });
+    if (data.length == 0) {
+      return res.status(400).send({ status: false, message: "NO data found" });
+    }
+      return res.status(200).send({ status: true,message: "Success", count: data.length,data: data,});
+
+  } catch (err) {
+    return res.status(500).send({ status: false, error: err.message });
+  }
+};
+
+//---------------------------------------Get Api(get productDetail by ProductId)---------------------------//
+
+const getProductById = async function(req, res){
+    try {
+        let productId = req.params.productId;
+
+        if (!Validator.isValidObjectId(productId)) {
+          return res.status(400).send({ status: false, message: "enter valid productId" });
+        }
+        let data = await productModel.findOne({_id: productId, isDeleted: false})
+        if(!data){
+           return res.status(404).send({ status: false, message: "No product found by this Product id" });
+        }
+
+        res.status(200).send({ status: true, message: "product details", data: data })
+
+      } catch (err) {
+        res.status(500).send({ err: err.message });
+      }
+
+};
 
 
 //-------------------------------Update product-----------------------------//
@@ -245,7 +299,14 @@ const updateProductById = async function (req, res) {
   }
 
 
-  if (data.hasOwnProperty("productImage")&&files.length > 0) {
+  if (Object.keys(data).indexOf("productImage")) {
+
+    if (Object.keys(data).indexOf("productImage")!=-1&&files.length=== 0) {
+      return res.status(400).send({
+        status: false,
+        message: "no file to update",
+      });
+    }
 
     if (!Validator.isValidImageType(files[0].mimetype)) {
       return res.status(400).send({
@@ -312,31 +373,19 @@ const updateProductById = async function (req, res) {
 }
 
 
+const deleteProducts = async function(req, res){
+  let productId = req.params.productId
 
+  if (!Validator.isValidObjectId(productId)) {
+         return res.status(400).send({ status: false, message: "enter valid productId" });
+     }
+  let data = await productModel.findOne({_id: productId, isDeleted: false})
+  if(!data){
+     return res.status(404).send({ status: false, message: "Product already deleted" });
+  }
+  let deletedData = await productModel.findOneAndUpdate({_id:productId},{isDeleted:true,deletedAt:new Date()},{new:true})
+  return res.status(200).send({status: true, message: "success", data: deletedData})
 
-// const getProductById = async function(req, res){
-//     try {
-//         let productId = req.params.productId;
-//         if (!Validator.isValidObjectId(productId)) {
-//           return res.status(401).send({ status: false, message: "enter valid productId" });
-//         }
+}
 
-//         //  if (req.idDecoded != productId.toString()) {
-//         //   return res.status(401).send({ status: false, message: "you aren't authorized" });
-
-//         //  }
-
-//         let data = await productModel.findOne({ _id: productId });
-
-//         res.status(200).send({ status: true, message: "product details", data: data })
-
-//       } catch (err) {
-//         res.status(500).send({ err: err.message });
-//       }
-
-// };
-
-
-// const updateProduct
-
-module.exports = { createProduct, updateProductById }
+module.exports = { createProduct,getProduct ,getProductById,updateProductById, deleteProducts };

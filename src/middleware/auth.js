@@ -6,10 +6,11 @@ const Validator = require("../validation/validation");
 
 const authentication = async function (req, res, next) {
   try {
-    let token = req.header("Authorization")
-    if(!token) return res.status(400).send({status:false,message:"Token is required"})
-    token = token.replace("Bearer ","")
-    jwt.verify(token,"group-22-productManangement",function(err,decodedToken){
+    let token = req.header("Authorization").split(" ")
+    if(token.length==0) return res.status(400).send({status:false,message:"Token is required"})
+    if(token[0]!="Bearer") return res.status(400).send({status:false,message:"Please give a bearer token"})
+    
+    jwt.verify(token[1],"group-22-productManangement",function(err,decodedToken){
       if(err) return res.status(401).send({ status: false, message: "invalid Token" });
       req.idDecoded = decodedToken.userId
       next()

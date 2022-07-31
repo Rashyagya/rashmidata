@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const { uploadFile } = require("../aws/aws");
 const jwt = require("jsonwebtoken");
 const Validator = require("../validation/validation");
-/* ------------------------------------------------POST/register-------------------------------------------------------- */
+
+//----------------------------------------POST Api (user register)---------------------------------------//
 
 const createUser = async function (req, res) {
   try {
@@ -30,7 +31,7 @@ const createUser = async function (req, res) {
     if (!Validator.isValidOnlyCharacters(fname)) {
       return res.status(400).send({
         status: false,
-        message: "last name should contain only alphabets"
+        message: "first name should contain only alphabets"
       });
     }
 
@@ -79,7 +80,7 @@ const createUser = async function (req, res) {
     if (!Validator.isValidPhone(phone)) {
       return res.status(400).send({
         status: false,
-        message: "give a valid mobile number",
+        message: "give a  PAN India mobile number",
       });
     }
     if (await userModel.findOne({ phone })) {
@@ -170,7 +171,7 @@ const createUser = async function (req, res) {
   }
 };
 
-/* ----------------------------------------------POST/login---------------------------------------------------------*/
+//-----------------------------------------POST/login---------------------------------------//
 
 const loginUser = async function (req, res) {
   try {
@@ -234,6 +235,7 @@ const loginUser = async function (req, res) {
   }
 };
 
+//-----------------------------------Get Api(get by userId)-----------------------------------------------//
 
 const getUser = async function (req, res) {
   try {
@@ -257,7 +259,7 @@ const getUser = async function (req, res) {
 };
 
 
-//-----------------------update user---------------------------
+//--------------------------PUT Api(update user)--------------------------------------//
 
 
 const updateUser = async function (req, res) {

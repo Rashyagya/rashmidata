@@ -1,9 +1,9 @@
 const express = require('express');
-const router= express.Router()
+const router = express.Router()
 const user = require("../controllers/userController")
 const product = require("../controllers/productController")
 const MW = require("../Middleware/auth")
-//const aws = require("aws-sdk")
+
 
 //-------------------------------------User------------------------------------------------//
 
@@ -26,8 +26,11 @@ router.put("/products/:productId", product.updateProductById)
 
 
 
+router.get("/products" , product.getProduct)
 
+ router.get("/products/:productId", product.getProductById)
 
+router.delete("/products/:productId" , product.deleteProducts)
 
 
 
