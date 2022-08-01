@@ -185,6 +185,7 @@ const createProduct = async function (req, res) {
 
 const getProduct = async function (req, res) {
   try {
+    
     let filter = req.query
     let name = filter.name
     let size = filter.size
@@ -214,19 +215,27 @@ const getProduct = async function (req, res) {
       getproduct["price"] = { $gt: priceGreaterThan, $lt: priceLessThan }
     }
 
-
-    if (filter.priceSort) {
-      if ((!priceSort == '-1' || priceSort == '1')) {
-        return res.status(400).send({ status: false, message: `value of priceSort must be 1 or -1 ` })
-      }
-      priceSort = priceSort.toString().trim()
-    }
-
-    const data = await productModel.find(getproduct).sort({ price: filter.priceSort }).select({ _v: 0 })
+    let data = await productModel.find(getproduct).select({ _v: 0 })//.sort(priceSort)
     if (data.length == 0) {
       return res.status(400).send({ status: false, message: "NO data found" });
     }
-    return res.status(200).send({ status: true, message: "Success", count: data.length, data: data, });
+    if (filter.priceSort) {
+      priceSort = priceSort.toString().trim()
+      if (["1","-1"].indexOf(filter.priceSort)==-1) {
+        return res.status(400).send({ status: false, message: `value of priceSort must be 1 or -1 ` })
+      }
+      if(priceSort ==="1"){
+        data = data.sort( function(a,b){
+          return a.price-b.price })
+      }
+      if(priceSort ==="-1"){
+        data = data.sort( function(a,b){
+          return b.price-a.price })
+      }
+    }
+    //  data = data.sort(priceSort)
+   
+    return res.status(200).send({ status: true, message: "Success", count: data.length, data: data });
 
   } catch (err) {
     return res.status(500).send({ status: false, error: err.message });
@@ -258,136 +267,141 @@ const getProductById = async function (req, res) {
 //-------------------------------Update product-----------------------------//
 
 const updateProductById = async function (req, res) {
+  try {
 
-  let productId = req.params.productId
-  if (!Validator.isValidObjectId(productId)) {
-    return res.status(400).send({ status: false, message: "enter valid productId" });
-  }
-  if (!await productModel.findOne({ _id: productId, isDeleted: false })) {
-    return res.status(404).send({ status: false, message: "Product doesn't exist" })
-  }
-
-  let data = req.body
-  let files = req.files;
-
-  if (Validator.isValidBody(data)) {
-    return res.status(400).send({ status: false, message: "atleast give one data that you want to update" });
-  }
-
-  if (data.title) {
-    if (!isNaN(parseInt(data.title))) {
-      return res.status(400).send({ status: false, message: "title should be string" });
+    let productId = req.params.productId
+    if (!Validator.isValidObjectId(productId)) {
+      return res.status(400).send({ status: false, message: "enter valid productId" });
+    }
+    if (!await productModel.findOne({ _id: productId, isDeleted: false })) {
+      return res.status(404).send({ status: false, message: "Product doesn't exist" })
     }
 
-    if (await productModel.findOne({ title: data.title })) {
-      return res.status(400).send({ status: false, message: "product already exists" })
-    }
-  }
+    let data = req.body
+    let files = req.files;
 
-  if (data.description) {
-    if (!isNaN(parseInt(data.description))) {
-      return res.status(400).send({ status: false, message: "description should be string" });
-    }
-  }
-
-  if (data.price) {
-    if (isNaN(parseInt(data.price))) {
-      return res.status(400).send({
-        status: false,
-        message: "price should be Number"
-      });
-    }
-    data.price = parseInt(data.price)
-  }
-
-  if (data.isFreeShipping) {
-    if (["true", "false"].indexOf(data.isFreeShipping) == -1) {
-      return res.status(400).send({
-        status: false,
-        message: "free shipping can only be true or false"
-      });
-    }
-    if (data.isFreeShipping === "True") {
-      data.isFreeShipping = true
-    }
-    else {
-      data.isFreeShipping = false
-    }
-  }
-
-
-  if (Object.keys(data).indexOf("productImage")) {
-
-    if (Object.keys(data).indexOf("productImage")!=-1&&files.length=== 0) {
-      return res.status(400).send({
-        status: false,
-        message: "no file to update",
-      });
+    if (Validator.isValidBody(data)) {
+      return res.status(400).send({ status: false, message: "atleast give one data that you want to update" });
     }
 
-    if (!Validator.isValidImageType(files[0].mimetype)) {
-      return res.status(400).send({
-        status: false,
-        message: "Only images can be uploaded (jpeg/jpg/png)",
-      });
+    if (data.title) {
+      if (!isNaN(parseInt(data.title))) {
+        return res.status(400).send({ status: false, message: "title should be string" });
+      }
+
+      if (await productModel.findOne({ title: data.title })) {
+        return res.status(400).send({ status: false, message: "product already exists" })
+      }
     }
 
-    //uploading the photo
-    let fileUrl = await uploadFile(files[0]);
-    data.productImage = fileUrl;
-  }
-
-  if (data.style) {
-    if (!isNaN(parseInt(data.style))) {
-      return res.status(400).send({
-        status: false,
-        message: "style should be string",
-      });
+    if (data.description) {
+      if (!isNaN(parseInt(data.description))) {
+        return res.status(400).send({ status: false, message: "description should be string" });
+      }
     }
-    if (typeof data.style == "string" && data.style.trim().length === 0) {
-      return res.status(400).send({
-        status: false,
-        message: "style can't be empty",
-      });
-    }
-  }
 
-  if (data.availableSizes) {
-    let sizeArr = data.availableSizes.split(",")
-    if (sizeArr.length == 1) {
-      if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[0]) == -1) {
+    if (data.price) {
+      if (isNaN(parseInt(data.price))) {
         return res.status(400).send({
           status: false,
-          message: "available sizes should be among S,XS,M,X,L,XXL,XL"
+          message: "price should be Number"
         });
       }
-      data.availableSizes = sizeArr
+      data.price = parseInt(data.price)
     }
-    else {
-      for (let i = 0; i < sizeArr.length; i++) {
-        if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[i]) === -1) {
+
+    if (data.isFreeShipping) {
+      if (["true", "false"].indexOf(data.isFreeShipping) == -1) {
+        return res.status(400).send({
+          status: false,
+          message: "free shipping can only be true or false"
+        });
+      }
+      if (data.isFreeShipping === "True") {
+        data.isFreeShipping = true
+      }
+      else {
+        data.isFreeShipping = false
+      }
+    }
+
+
+    if (Object.keys(data).indexOf("productImage")) {
+
+      if (Object.keys(data).indexOf("productImage") != -1 && files.length === 0) {
+        return res.status(400).send({
+          status: false,
+          message: "no file to update",
+        });
+      }
+
+      if (!Validator.isValidImageType(files[0].mimetype)) {
+        return res.status(400).send({
+          status: false,
+          message: "Only images can be uploaded (jpeg/jpg/png)",
+        });
+      }
+
+      //uploading the photo
+      let fileUrl = await uploadFile(files[0]);
+      data.productImage = fileUrl;
+    }
+
+    if (data.style) {
+      if (!isNaN(parseInt(data.style))) {
+        return res.status(400).send({
+          status: false,
+          message: "style should be string",
+        });
+      }
+      if (typeof data.style == "string" && data.style.trim().length === 0) {
+        return res.status(400).send({
+          status: false,
+          message: "style can't be empty",
+        });
+      }
+    }
+
+    if (data.availableSizes) {
+      let sizeArr = data.availableSizes.split(",")
+      if (sizeArr.length == 1) {
+        if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[0]) == -1) {
           return res.status(400).send({
             status: false,
             message: "available sizes should be among S,XS,M,X,L,XXL,XL"
           });
         }
+        data.availableSizes = sizeArr
       }
-      data.availableSizes = sizeArr
+      else {
+        for (let i = 0; i < sizeArr.length; i++) {
+          if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[i]) === -1) {
+            return res.status(400).send({
+              status: false,
+              message: "available sizes should be among S,XS,M,X,L,XXL,XL"
+            });
+          }
+        }
+        data.availableSizes = sizeArr
+      }
     }
-  }
 
-  if (data.installments) {
-    if (isNaN(parseInt(data.installments))) {
-      return res.status(400).send({
-        status: false,
-        message: "Installments should be a number"
-      });
+    if (data.installments) {
+      if (isNaN(parseInt(data.installments))) {
+        return res.status(400).send({
+          status: false,
+          message: "Installments should be a number"
+        });
+      }
+      data.installments = parseInt(data.installments)
     }
-    data.installments = parseInt(data.installments)
+    let updatedData = await productModel.findOneAndUpdate({ _id: productId }, data, { new: true })
+    res.status(200).send({ status: true, message: "updated", data: updatedData })
+
+  } catch (err) {
+    return res.status(500).send({ status: false, error: err.message });
   }
-  let updatedData = await productModel.findOneAndUpdate({ _id: productId }, data, { new: true })
-  res.status(200).send({ status: true, message: "updated", data: updatedData })
-}
+};
 
 //------------------------------------Delete Api--------------------------------------------//
 
@@ -404,11 +418,11 @@ const deleteProducts = async function (req, res) {
     }
     let deletedData = await productModel.findOneAndUpdate({ _id: productId }, { isDeleted: true, deletedAt: new Date() }, { new: true })
     return res.status(200).send({ status: true, message: "success", data: deletedData })
-    
+
   } catch (err) {
     return res.status(500).send({ status: false, error: err.message });
   }
 };
 
 
-module.exports = { createProduct,getProduct ,getProductById,updateProductById, deleteProducts };
+module.exports = { createProduct, getProduct, getProductById, updateProductById, deleteProducts };
