@@ -21,7 +21,7 @@ const createCart = async function (req, res) {
         const findUserId = await userModel.findById({ _id: userId });
 
         if (!findUserId) {
-            return res.status(400).send({ status: false, message: `User doesn't exist by ${userId}` });
+            return res.status(400).send({ status: false, message: `User doesn't exist by ${userId}`});
         }
 
         let totalPrice = 0
@@ -86,6 +86,35 @@ const updateCart = async function (req, res) {
 };
 
 
+//----------------------------------------Get Api(getcart by userId)------------------------------//    
+
+const getCart = async function (req, res) {
+    try {
+        let userId = req.params.userId
+
+        if (!Validator.isValidObjectId(userId)) {
+            return res.status(400).send({ status: false, message: "enter valid userId" });
+        }
+    
+        let checkUserId = await userModel.findOne({ _id: userId })
+        if (!checkUserId) {
+            return res.status(404).send({ status: false, message: `User doesn't exist by ${userId}` })
+        }
+
+        let data = await cartModel.findOne({ userId })
+        if (!data) {
+            return res.status(404).send({ status: false, message: `Cart does not Exist with user id :${userId}` })
+        }
+    
+        res.status(200).send({ status: true,count : data.length, data: data })
+
+    } catch (err) {
+        res.status(500).send({ err: err.message });
+    }
+};
 
 
-module.exports = { createCart, updateCart }   
+
+
+
+module.exports = { createCart, updateCart , getCart}   
