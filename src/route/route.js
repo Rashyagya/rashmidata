@@ -22,7 +22,9 @@ router.post("/products", product.createProduct)
 
 router.get("/products" , product.getProduct)
 
- router.get("/products/:productId", product.getProductById)
+router.get("/products/:productId", product.getProductById)
+
+router.put("/products/:productId" , product.updateProducts)
 
 router.delete("/products/:productId" , product.deleteProducts)
 

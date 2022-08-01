@@ -25,7 +25,7 @@ const createProduct = async function (req, res) {
     }
 
     if (await productModel.findOne({ title: data.title })) {
-      return res.status(400).send({ status: false, message: "product already exists" })
+      return res.status(400).send({ status: false, message: "title already exists" })
     }
 
     //validation for description
@@ -178,29 +178,48 @@ const createProduct = async function (req, res) {
 
 const getProduct = async function (req, res) {
   try {
-    let filter = req.query;
-    let filters = { isDeleted: false };
-    if (filter) {
-      const { name, size, priceSort } = filter;
+    let filter = req.query
+    let name = filter.name
+    let size = filter.size
+    let priceGreaterThan = filter.priceGreaterThan
+    let priceLessThan = filter.priceLessThan
+    let priceSort = filter.priceSort
+    const getproduct = { isDeleted: false };
 
-      let nameIncludes = new RegExp(`${filter.name}`, "gi");
+    let nameIncludes = new RegExp(`${filter.name}`, "gi");
 
-      if (name) {
-       filter.title = nameIncludes;
-      }
-      if(priceSort) {
-        filter.priceSort = { $all: priceSort}
-      }
-      if (size) {
-        const sizeArr = size.trim().split(",").map((x) => x.trim());
-        filter.availableSizes = { $all: sizeArr };
-      }
+    if (name) {
+      getproduct["title"] = nameIncludes
     }
-    let data = await productModel.find(filter).sort({ price: filter.priceSort });
+
+    if (size) {
+      var available = size.toUpperCase().split(",")
+      getproduct["availableSizes"] = { $all: available }
+    }
+
+    if (priceLessThan) {
+      getproduct["price"] = { $lt: priceLessThan }
+    }
+    if (priceGreaterThan) {
+      getproduct["price"] = { $gt: priceGreaterThan }
+    }
+    if (priceGreaterThan && priceLessThan) {
+      getproduct["price"] = { $gt: priceGreaterThan, $lt: priceLessThan }
+    }
+
+
+    if (filter.priceSort) {
+      if ((!priceSort == '-1' || priceSort == '1')) {
+        return res.status(400).send({ status: false, message: `value of priceSort must be 1 or -1 ` })
+      }
+      priceSort = priceSort.toString().trim()
+    }
+
+    const data = await productModel.find(getproduct).sort({ price: filter.priceSort }).select({ _v: 0 })
     if (data.length == 0) {
       return res.status(400).send({ status: false, message: "NO data found" });
     }
-      return res.status(200).send({ status: true,message: "Success", count: data.length,data: data,});
+    return res.status(200).send({ status: true, message: "Success", count: data.length, data: data, });
 
   } catch (err) {
     return res.status(500).send({ status: false, error: err.message });
@@ -209,43 +228,46 @@ const getProduct = async function (req, res) {
 
 //---------------------------------------Get Api(get productDetail by ProductId)---------------------------//
 
-const getProductById = async function(req, res){
-    try {
-        let productId = req.params.productId;
+const getProductById = async function (req, res) {
+  try {
+    let productId = req.params.productId;
 
-        if (!Validator.isValidObjectId(productId)) {
-          return res.status(400).send({ status: false, message: "enter valid productId" });
-        }
-        let data = await productModel.findOne({_id: productId, isDeleted: false})
-        if(!data){
-           return res.status(404).send({ status: false, message: "No product found by this Product id" });
-        }
+    if (!Validator.isValidObjectId(productId)) {
+      return res.status(400).send({ status: false, message: "enter valid productId" });
+    }
+    let data = await productModel.findOne({ _id: productId, isDeleted: false })
+    if (!data) {
+      return res.status(404).send({ status: false, message: "No product found by this Product id" });
+    }
 
-        res.status(200).send({ status: true, message: "product details", data: data })
+    res.status(200).send({ status: true, message: "product details", data: data })
 
-      } catch (err) {
-        res.status(500).send({ err: err.message });
-      }
+  } catch (err) {
+    res.status(500).send({ err: err.message });
+  }
 
 };
-
 
 //------------------------------------Delete Api--------------------------------------------//
 
 
-const deleteProducts = async function(req, res){
-  let productId = req.params.productId
+const deleteProducts = async function (req, res) {
+  try {
+    let productId = req.params.productId
 
-  if (!Validator.isValidObjectId(productId)) {
-         return res.status(400).send({ status: false, message: "enter valid productId" });
-     }
-  let data = await productModel.findOne({_id: productId, isDeleted: false})
-  if(!data){
-     return res.status(404).send({ status: false, message: "Product already deleted" });
+    if (!Validator.isValidObjectId(productId)) {
+      return res.status(400).send({ status: false, message: "enter valid productId" });
+    }
+    let data = await productModel.findOne({ _id: productId, isDeleted: false })
+    if (!data) {
+      return res.status(404).send({ status: false, message: "Product already deleted" });
+    }
+    let deletedData = await productModel.findOneAndUpdate({ _id: productId }, { isDeleted: true, deletedAt: new Date() }, { new: true })
+    return res.status(200).send({ status: true, message: "success", data: deletedData })
+  } catch (err) {
+    return res.status(500).send({ status: false, error: err.message });
   }
-  let deletedData = await productModel.findOneAndUpdate({_id:productId},{isDeleted:true,deletedAt:new Date()},{new:true})
-  return res.status(200).send({status: true, message: "success", data: deletedData})
+};
 
-}
 
-module.exports = { createProduct,getProduct ,getProductById, deleteProducts };
+module.exports = { createProduct, getProduct, getProductById, updateProducts, deleteProducts };
