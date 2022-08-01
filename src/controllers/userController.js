@@ -80,7 +80,7 @@ const createUser = async function (req, res) {
     if (!Validator.isValidPhone(phone)) {
       return res.status(400).send({
         status: false,
-        message: "give a  PAN India mobile number",
+        message: "give a PAN India mobile number",
       });
     }
     if (await userModel.findOne({ phone })) {
