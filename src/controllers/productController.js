@@ -256,7 +256,7 @@ const getProductById = async function (req, res) {
       return res.status(404).send({ status: false, message: "No product found by this Product id" });
     }
 
-    res.status(200).send({ status: true, message: "product details", data: data })
+    res.status(200).send({ status: true, message: "product details",count: data.length, data: data })
 
   } catch (err) {
     res.status(500).send({ err: err.message });
