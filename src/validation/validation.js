@@ -36,11 +36,6 @@ function isValidPhone(data) {
     return(/^[0]?[6789]\d{9}$/.test(data))
 
 }
-//------------------------------------Numeric Validation----------------------------------------------//
-const isValidNum = function(value) {
-    return (/^\d{1,5}\.?\d{0,2}$/.test(value))
-        
-}
 
 /* ------------------------------------------password format--------------------------------- */
 function isValidPassword(data) {
@@ -70,4 +65,4 @@ const isValidPincode = function(data){
 }
 
 
-module.exports = { isValidBody, isValidInputValue, isValidObjectId, isValidImageType,isValidNum, isValidOnlyCharacters, isValidEmail, isValidPhone, isValidPassword, isValidAddress, isValidPincode}
+module.exports = { isValidBody, isValidInputValue, isValidObjectId, isValidImageType, isValidOnlyCharacters, isValidEmail, isValidPhone, isValidPassword, isValidAddress, isValidPincode}
