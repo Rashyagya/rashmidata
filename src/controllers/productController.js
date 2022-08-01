@@ -185,7 +185,7 @@ const createProduct = async function (req, res) {
 
 const getProduct = async function (req, res) {
   try {
-    
+
     let filter = req.query
     let name = filter.name
     let size = filter.size
@@ -221,26 +221,27 @@ const getProduct = async function (req, res) {
     }
     if (filter.priceSort) {
       priceSort = priceSort.toString().trim()
-      if (["1","-1"].indexOf(filter.priceSort)==-1) {
+      if (["1", "-1"].indexOf(filter.priceSort) == -1) {
         return res.status(400).send({ status: false, message: `value of priceSort must be 1 or -1 ` })
       }
-      if(priceSort ==="1"){
-        data = data.sort( function(a,b){
-          return a.price-b.price })
+      if (priceSort === "1") {
+        data = data.sort(function (a, b) {
+          return a.price - b.price
+        })
       }
-      if(priceSort ==="-1"){
-        data = data.sort( function(a,b){
-          return b.price-a.price })
+      if (priceSort === "-1") {
+        data = data.sort(function (a, b) {
+          return b.price - a.price
+        })
       }
     }
     //  data = data.sort(priceSort)
-   
-    return res.status(200).send({ status: true, message: "Success", count: data.length, data: data });
 
+    return res.status(200).send({ status: true, message: "Success", count: data.length, data: data });
   } catch (err) {
-    return res.status(500).send({ status: false, error: err.message });
+    res.status(500).send({ err: err.message });
   }
-};
+}
 
 //---------------------------------------Get Api(get productDetail by ProductId)---------------------------//
 
@@ -280,10 +281,10 @@ const updateProductById = async function (req, res) {
     let data = req.body
     let files = req.files;
 
-    if (Validator.isValidBody(data)) {
-      return res.status(400).send({ status: false, message: "atleast give one data that you want to update" });
+    if(Object.keys(data).length==0){
+      return res.status(400).send({ status: false, message: "please give some data to update" });
     }
-
+    
     if (data.title) {
       if (!isNaN(parseInt(data.title))) {
         return res.status(400).send({ status: false, message: "title should be string" });
@@ -307,6 +308,7 @@ const updateProductById = async function (req, res) {
           message: "price should be Number"
         });
       }
+      
       data.price = parseInt(data.price)
     }
 
@@ -326,7 +328,7 @@ const updateProductById = async function (req, res) {
     }
 
 
-    if (Object.keys(data).indexOf("productImage")) {
+    if (Object.keys(data).indexOf("productImage") != -1) {
 
       if (Object.keys(data).indexOf("productImage") != -1 && files.length === 0) {
         return res.status(400).send({
@@ -361,29 +363,18 @@ const updateProductById = async function (req, res) {
         });
       }
     }
-
     if (data.availableSizes) {
       let sizeArr = data.availableSizes.split(",")
-      if (sizeArr.length == 1) {
-        if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[0]) == -1) {
+      for (let i = 0; i < sizeArr.length; i++) {
+        if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[i]) === -1) {
           return res.status(400).send({
             status: false,
             message: "available sizes should be among S,XS,M,X,L,XXL,XL"
           });
         }
-        data.availableSizes = sizeArr
       }
-      else {
-        for (let i = 0; i < sizeArr.length; i++) {
-          if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[i]) === -1) {
-            return res.status(400).send({
-              status: false,
-              message: "available sizes should be among S,XS,M,X,L,XXL,XL"
-            });
-          }
-        }
-        data.availableSizes = sizeArr
-      }
+      data.$push = {availableSizes:sizeArr}
+      delete data.availableSizes
     }
 
     if (data.installments) {
@@ -401,7 +392,8 @@ const updateProductById = async function (req, res) {
   } catch (err) {
     return res.status(500).send({ status: false, error: err.message });
   }
-};
+}
+
 
 //------------------------------------Delete Api--------------------------------------------//
 
@@ -425,4 +417,4 @@ const deleteProducts = async function (req, res) {
 };
 
 
-module.exports = { createProduct, getProduct, getProductById, updateProductById, deleteProducts };
+module.exports = { createProduct, getProduct, getProductById, updateProductById, deleteProducts }
