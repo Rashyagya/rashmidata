@@ -23,6 +23,10 @@ const createProduct = async function (req, res) {
         message: "title is required"
       });
     }
+    if (!isNaN(parseInt(data.title))) {
+      return res.status(400).send({ status: false, message: "title should be string" });
+
+    }
 
     if (await productModel.findOne({ title: data.title })) {
       return res.status(400).send({ status: false, message: "product already exists" })
@@ -43,13 +47,15 @@ const createProduct = async function (req, res) {
         message: "price is required "
       });
     }
-    
+
     if (isNaN(parseInt(data.price))) {
       return res.status(400).send({
         status: false,
         message: "price should be Number"
       });
     }
+
+    data.price = parseInt(data.price)
 
     // //validations for currencyId
     // if (!Validator.isValidInputValue(data.currencyId)) {
@@ -121,6 +127,7 @@ const createProduct = async function (req, res) {
           message: "Installments should be a number"
         });
       }
+      data.installments = parseInt(data.installments)
     }
 
     //validations for product image
@@ -147,14 +154,14 @@ const createProduct = async function (req, res) {
     data.productImage = fileUrl;
 
     // validation for style
-    if(data.style){
-      if(typeof data.style != "string"){
+    if (data.style) {
+      if (!isNaN(parseInt(data.style))) {
         return res.status(400).send({
           status: false,
-          message: "Style can't be "+typeof data.style,
+          message: "Style can't be a string"
         });
       }
-      if(typeof data.style == "string"&& data.style.trim().length===0){
+      if (typeof data.style == "string" && data.style.trim().length === 0) {
         return res.status(400).send({
           status: false,
           message: "style can't be empty",
@@ -230,7 +237,140 @@ const getProductById = async function(req, res){
 };
 
 
-//------------------------------------Delete Api--------------------------------------------//
+//-------------------------------Update product-----------------------------//
+
+
+const updateProductById = async function (req, res) {
+
+  let productId = req.params.productId
+  if (!Validator.isValidObjectId(productId)) {
+    return res.status(400).send({ status: false, message: "enter valid productId" });
+  }
+  if (!await productModel.findOne({ _id: productId, isDeleted: false })) {
+    return res.status(404).send({ status: false, message: "Product doesn't exist" })
+  }
+
+  let data = req.body
+  let files = req.files;
+
+  if (Validator.isValidBody(data)) {
+    return res.status(400).send({ status: false, message: "atleast give one data that you want to update" });
+  }
+
+  if (data.title) {
+    if (!isNaN(parseInt(data.title))) {
+      return res.status(400).send({ status: false, message: "title should be string" });
+    }
+
+    if (await productModel.findOne({ title: data.title })) {
+      return res.status(400).send({ status: false, message: "product already exists" })
+    }
+  }
+
+  if (data.description) {
+    if (!isNaN(parseInt(data.description))) {
+      return res.status(400).send({ status: false, message: "description should be string" });
+    }
+  }
+
+  if (data.price) {
+    if (isNaN(parseInt(data.price))) {
+      return res.status(400).send({
+        status: false,
+        message: "price should be Number"
+      });
+    }
+    data.price = parseInt(data.price)
+  }
+
+  if (data.isFreeShipping) {
+    if (["true", "false"].indexOf(data.isFreeShipping) == -1) {
+      return res.status(400).send({
+        status: false,
+        message: "free shipping can only be true or false"
+      });
+    }
+    if (data.isFreeShipping === "True") {
+      data.isFreeShipping = true
+    }
+    else {
+      data.isFreeShipping = false
+    }
+  }
+
+
+  if (Object.keys(data).indexOf("productImage")) {
+
+    if (Object.keys(data).indexOf("productImage")!=-1&&files.length=== 0) {
+      return res.status(400).send({
+        status: false,
+        message: "no file to update",
+      });
+    }
+
+    if (!Validator.isValidImageType(files[0].mimetype)) {
+      return res.status(400).send({
+        status: false,
+        message: "Only images can be uploaded (jpeg/jpg/png)",
+      });
+    }
+
+    //uploading the photo
+    let fileUrl = await uploadFile(files[0]);
+    data.productImage = fileUrl;
+  }
+
+  if (data.style) {
+    if (!isNaN(parseInt(data.style))) {
+      return res.status(400).send({
+        status: false,
+        message: "style should be string",
+      });
+    }
+    if (typeof data.style == "string" && data.style.trim().length === 0) {
+      return res.status(400).send({
+        status: false,
+        message: "style can't be empty",
+      });
+    }
+  }
+
+  if (data.availableSizes) {
+    let sizeArr = data.availableSizes.split(",")
+    if (sizeArr.length == 1) {
+      if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[0]) == -1) {
+        return res.status(400).send({
+          status: false,
+          message: "available sizes should be among S,XS,M,X,L,XXL,XL"
+        });
+      }
+      data.availableSizes = sizeArr
+    }
+    else {
+      for (let i = 0; i < sizeArr.length; i++) {
+        if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[i]) === -1) {
+          return res.status(400).send({
+            status: false,
+            message: "available sizes should be among S,XS,M,X,L,XXL,XL"
+          });
+        }
+      }
+      data.availableSizes = sizeArr
+    }
+  }
+
+  if (data.installments) {
+    if (isNaN(parseInt(data.installments))) {
+      return res.status(400).send({
+        status: false,
+        message: "Installments should be a number"
+      });
+    }
+    data.installments = parseInt(data.installments)
+  }
+  let updatedData = await productModel.findOneAndUpdate({ _id: productId }, data, { new: true })
+  res.status(200).send({ status: true, message: "updated", data: updatedData })
+}
 
 
 const deleteProducts = async function(req, res){
@@ -248,4 +388,4 @@ const deleteProducts = async function(req, res){
 
 }
 
-module.exports = { createProduct,getProduct ,getProductById, deleteProducts };
+module.exports = { createProduct,getProduct ,getProductById,updateProductById, deleteProducts };
