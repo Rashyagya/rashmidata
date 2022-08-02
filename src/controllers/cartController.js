@@ -138,26 +138,32 @@ const updateCart = async function (req, res) {
             if (!cart) return res.status(400).send({ status: false, message: `no cart available for ${userId}` });
 
             console.log(cart)
+            let totalItems =cart.totalItems
             for (let i = 0; i < cart.items.length; i++) {
                 if (cart.items[i].productId == body.productId && cart.items[i].quantity >= 1) {
                     cart.items[i].quantity -= 1
                     if (cart.items[i].quantity === 0) {
                         cart.items.splice(i, 1)
+                        totalItems -= 1
                     }
-                    cart.totalItems -= 1
-                    cart.totalPrice -= findproductId.price
                     break;
                 }
             }
-            let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, }, { new: true })
+            let totalPrice = cart.totalPrice - findproductId.price
+            let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items,totalPrice : totalPrice, totalItems : totalItems}, { new: true })
             res.status(200).send({ status: true, message: "cart updated successfully", data: changedCart })
         }
         else {
             let cart = await cartModel.findOne({ userId: userId })
+            if (!cart) return res.status(400).send({ status: false, message: `no cart available for ${userId}` });
             console.log(cart)
-            for (let i = 0; i < items; i++) {
+            for (let i = 0; i < cart.items.length; i++) {
                 if (cart.items[i].productId == body.productId) {
+                    let totalPrice = cart.totalPrice-findproductId.price*cart.items[i].quantity
                     cart.items.splice(i, 1)
+                    let totalItems = cart.totalItems -1
+                    let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items,totalPrice : totalPrice , totalItems:totalItems}, { new: true })
+                    res.status(200).send({ status: true, message: "cart updated successfully", data: changedCart })
                 }
             }
         }
