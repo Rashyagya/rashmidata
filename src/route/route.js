@@ -36,6 +36,9 @@ router.post("/users/:userId/cart" , cart.createCart)
 
 router.put ("/users/:userId/cart" , cart.updateCart)
 
+router.get("/users/:userId/cart" , cart.getCart)
+
+router.delete("/users/:userId/cart" , cart.deleteCart)
 
 
 module.exports = router;

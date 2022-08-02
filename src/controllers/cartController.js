@@ -11,6 +11,7 @@ const createCart = async function (req, res) {
         const body = req.body;
 
         //-----------Request Body Validation---------//
+
         if (body.length == 0) {
             return res.status(400).send({ status: false, message: "Please provide valid request body" });
         }
@@ -56,7 +57,7 @@ const createCart = async function (req, res) {
             cart.totalPrice = totalPrice
             cart.totalItems = 1
             let createdCart = await cartModel.create(cart)
-            console.log(createdCart.items)
+            //console.log(createdCart.items)
             return res.status(201).send({ status: true, message: "cart created successfully", data: createdCart })
         }
         
@@ -78,7 +79,7 @@ const createCart = async function (req, res) {
             totalPrice: cart.totalPrice + totalPrice,
             totalItems: cart.totalItems + 1
         }
-        let createdCart = await cartModel.findOneAndUpdate({ userId: userId }, obj, { new: true })
+        let createdCart = await cartModel.findOneAndUpdate({ userId: userId }, obj ,{new: true})
         res.status(200).send({ status: true, message: "cart updated successfully", data: createdCart })
 
     } catch (err) {
@@ -169,6 +170,59 @@ const updateCart = async function (req, res) {
 };
 
 
+//----------------------------------------Get Api(getcart by userId)------------------------------//    
+
+const getCart = async function (req, res) {
+    try {
+        let userId = req.params.userId
+
+        if (!Validator.isValidObjectId(userId)) {
+            return res.status(400).send({ status: false, message: "enter valid userId" });
+        }
+    
+        let checkUserId = await userModel.findOne({ _id: userId })
+        if (!checkUserId) {
+            return res.status(404).send({ status: false, message: `User doesn't exist by ${userId}` })
+        }
+
+        let data = await cartModel.findOne({ userId })
+        if (!data) {
+            return res.status(404).send({ status: false, message: `Cart does not Exist with user id :${userId}` })
+        }
+    
+        res.status(200).send({ status: true, data: data })
+
+    } catch (err) {
+        res.status(500).send({ err: err.message });
+    }
+};
 
 
-module.exports = { createCart, updateCart }   
+//----------------------------------------Delete Api(Delete cart by userId)------------------------------//    
+
+const deleteCart = async function (req, res) {
+    try {
+        let userId = req.params.userId;
+
+        let Cart = await cartModel.findOne({ userId: userId });
+        if (!Cart) 
+            return res.status(404).send({ status: false, message: `No cart with this userId` });
+
+        if (Cart.items.length == 0) 
+           return res.status(400).send({ status: false, message: "Cart already empty" });
+
+        let deletedData = await cartModel.findByIdAndUpdate(
+            {_id: Cart._id},{items: [], totalPrice:0, totalItems:0},{ new: true })
+
+        res.status(204).send({ status: true, message: "Cart successfully removed", data:deletedData})
+
+    } catch (err) {
+        res.status(500).send({ err: err.message });
+    }
+};
+
+
+
+
+
+module.exports = { createCart, updateCart , getCart , deleteCart}   
