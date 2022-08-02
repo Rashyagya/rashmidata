@@ -84,7 +84,7 @@ const createCart = async function (req, res) {
 
 const updateCart = async function (req, res) {
     try {
-
+        
 
     } catch (err) {
         res.status(500).send({ err: err.message });
