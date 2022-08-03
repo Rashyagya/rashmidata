@@ -8,8 +8,9 @@ const Validator = require("../validation/validation");
 const createCart = async function (req, res) {
     try {
         const body = req.body;
+        const userId = req.params.userId
+        //request body validations
 
-        //request body validation
         if (Validator.isValidBody(body)) {
             return res.status(400).send({status: false,message: "body cant be empty"});
         }
@@ -52,7 +53,7 @@ const createCart = async function (req, res) {
             cart.totalItems = 1
             let createdCart = await cartModel.create(cart)
             //console.log(createdCart.items)
-            return res.status(201).send({ status: true, message: "cart created successfully", data: createdCart })
+            return res.status(201).send({ status: true, message: "Success", data: createdCart })
         }
 
         for (let i = 0; i < cart.items.length; i++) {
@@ -63,7 +64,7 @@ const createCart = async function (req, res) {
                     cart.items[i].quantity += 1
                 }
                 let createdCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, totalPrice: cart.totalPrice + totalPrice }, { new: true })
-                return res.status(200).send({ status: true, message: "cart updated successfully", data: createdCart })
+                return res.status(201).send({ status: true, message: "Success", data: createdCart })
 
             }
 
@@ -74,11 +75,11 @@ const createCart = async function (req, res) {
             totalItems: cart.totalItems + 1
         }
         let createdCart = await cartModel.findOneAndUpdate({ userId: userId }, obj, { new: true })
-        res.status(200).send({ status: true, message: "cart updated successfully", data: createdCart })
+        res.status(201).send({ status: true, message: "Success", data: createdCart })
 
     } catch (err) {
         console.log(err)
-        res.status(500).send({ err: err.message });
+        res.status(500).send({ status:false,message: err.message });
     }
 };
 
@@ -90,6 +91,7 @@ const updateCart = async function (req, res) {
 
 
         let body = req.body
+        const userId = req.params.userId
 
         if (Validator.isValidBody(body)) {
             return res.status(400).send({status: false, message: "body cant be empty"});
@@ -140,7 +142,7 @@ const updateCart = async function (req, res) {
             }
             let totalPrice = cart.totalPrice - findproductId.price
             let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
-            res.status(200).send({ status: true, message: "cart updated successfully", data: changedCart })
+            res.status(200).send({ status: true, message: "Success", data: changedCart })
         }
         else {
             let cart = await cartModel.findOne({ userId: userId })
@@ -152,7 +154,7 @@ const updateCart = async function (req, res) {
                     cart.items.splice(i, 1)
                     let totalItems = cart.totalItems - 1
                     let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
-                    res.status(200).send({ status: true, message: "cart updated successfully", data: changedCart })
+                    res.status(200).send({ status: true, message: "Success", data: changedCart })
                 }
             }
         }
@@ -160,7 +162,7 @@ const updateCart = async function (req, res) {
 
     } catch (err) {
         console.log(err)
-        res.status(500).send({ err: err.message });
+        res.status(500).send({ status:false,message: err.message });
     }
 };
 
@@ -169,16 +171,17 @@ const updateCart = async function (req, res) {
 
 const getCart = async function (req, res) {
     try {
+        const userId = req.params.userId
 
         let data = await cartModel.findOne({ userId })
         if (!data) {
             return res.status(404).send({ status: false, message: `Cart does not Exist with user id :${userId}` })
         }
 
-        res.status(200).send({ status: true, data: data })
+        res.status(200).send({ status: true,message:"Success", data: data })
 
     } catch (err) {
-        res.status(500).send({ err: err.message });
+        res.status(500).send({ status:false,message: err.message });
     }
 };
 
@@ -187,7 +190,8 @@ const getCart = async function (req, res) {
 
 const deleteCart = async function (req, res) {
     try {
-        
+        const userId = req.params.userId
+
         let Cart = await cartModel.findOne({ userId: userId });
         if (!Cart)
             return res.status(404).send({ status: false, message: `No cart with this userId` });
@@ -201,7 +205,7 @@ const deleteCart = async function (req, res) {
         res.status(204).send({ status: true, message: "Cart successfully removed", data: deletedData })
 
     } catch (err) {
-        res.status(500).send({ err: err.message });
+        res.status(500).send({ status:false,message: err.message });
     }
 };
 

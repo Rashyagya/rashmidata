@@ -167,7 +167,7 @@ const createUser = async function (req, res) {
       data: savedData,
     });
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
@@ -231,7 +231,7 @@ const loginUser = async function (req, res) {
       data: { userId: hash._id, token: token },
     });
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
@@ -254,7 +254,7 @@ const getUser = async function (req, res) {
     res.status(200).send({ status: true, message: "User profile details", data: data })
 
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
@@ -425,7 +425,7 @@ const updateUser = async function (req, res) {
 
 
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
