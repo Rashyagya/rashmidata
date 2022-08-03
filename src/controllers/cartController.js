@@ -10,16 +10,12 @@ const createCart = async function (req, res) {
         const userId = req.params.userId;
         const body = req.body;
 
-        //request body validations
-
+        //request body validation
         if (Validator.isValidBody(body)) {
-            return res.status(400).send({
-              status: false,
-              message: "body cant be empty",
-            });
-          }
+            return res.status(400).send({status: false,message: "body cant be empty"});
+        }
 
-        //userId validations
+        //userId validation
         if (!Validator.isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: "enter valid userId" });
         }
@@ -29,7 +25,7 @@ const createCart = async function (req, res) {
             return res.status(404).send({ status: false, message: `User doesn't exist by ${userId}` });
         }
 
-        //productId validations
+        //productId validation
         if (!body.productId) {
             return res.status(400).send({ status: false, message: ` productId is required` });
         }
@@ -117,16 +113,13 @@ const updateCart = async function (req, res) {
         let body = req.body
 
         if (Validator.isValidBody(body)) {
-            return res.status(400).send({
-              status: false,
-              message: "body cant be empty",
-            });
-          }
+            return res.status(400).send({status: false, message: "body cant be empty"});
+        }
 
         if (!body.productId) {
             return res.status(400).send({ status: false, message: `please give a productId` });
-
         }
+        
         if (!Validator.isValidObjectId(body.productId)) {
             return res.status(400).send({ status: false, message: "give a valid productId" });
 
