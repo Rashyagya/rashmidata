@@ -167,7 +167,7 @@ const createUser = async function (req, res) {
       data: savedData,
     });
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
@@ -231,7 +231,7 @@ const loginUser = async function (req, res) {
       data: { userId: hash._id, token: token },
     });
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
@@ -254,7 +254,7 @@ const getUser = async function (req, res) {
     res.status(200).send({ status: true, message: "User profile details", data: data })
 
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
@@ -272,20 +272,6 @@ const updateUser = async function (req, res) {
         status: false,
         message: "User data is required to update",
       });
-    }
-
-    let userId = req.params.userId
-
-    if (!Validator.isValidObjectId(userId)) {
-      return res.status(401).send({ status: false, message: "enter valid UserId" });
-    }
-
-    if (!await userModel.findOne({ _id: userId, isDeleted: false })) {
-      return res.status(401).send({ status: false, message: "this user doesn't exist" });
-    }
-
-    if (req.idDecoded != userId.toString()) {
-      return res.status(401).send({ status: false, message: "you aren't authorized" });
     }
 
     if (data.fname) {
@@ -439,7 +425,7 @@ const updateUser = async function (req, res) {
 
 
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 

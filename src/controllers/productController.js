@@ -177,7 +177,7 @@ const createProduct = async function (req, res) {
     });
   } catch (err) {
     console.log(err)
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 };
 
@@ -239,7 +239,7 @@ const getProduct = async function (req, res) {
 
     return res.status(200).send({ status: true, message: "Success", count: data.length, data: data });
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 }
 
@@ -260,7 +260,7 @@ const getProductById = async function (req, res) {
     res.status(200).send({ status: true, message: "product details",count: data.length, data: data })
 
   } catch (err) {
-    res.status(500).send({ err: err.message });
+    res.status(500).send({ status:false,message: err.message });
   }
 
 };
