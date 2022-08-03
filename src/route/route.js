@@ -14,7 +14,7 @@ router.post("/login" , user.loginUser)
 
 router.get("/user/:userId/profile",MW.authentication,user.getUser)
 
-router.put("/user/:userId/profile",MW.authentication,user.updateUser)
+router.put("/user/:userId/profile",MW.authentication,MW.authorization,user.updateUser)
 
 
 //------------------------------------Product-------------------------------------------//
@@ -32,13 +32,13 @@ router.delete("/products/:productId" , product.deleteProducts)
 
 //-------------------------------cart Api------------------------------------------//
 
-router.post("/users/:userId/cart" , cart.createCart)
+router.post("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.createCart)
 
-router.put ("/users/:userId/cart" , cart.updateCart)
+router.put ("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.updateCart)
 
-router.get("/users/:userId/cart" , cart.getCart)
+router.get("/users/:userId/cart" , MW.authentication,MW.authorization,cart.getCart)
 
-router.delete("/users/:userId/cart" , cart.deleteCart)
+router.delete("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.deleteCart)
 
 
 module.exports = router;
