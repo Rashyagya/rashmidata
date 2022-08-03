@@ -3,6 +3,7 @@ const router = express.Router()
 const user = require("../controllers/userController")
 const product = require("../controllers/productController")
 const cart = require("../controllers/cartController")
+const order = require("../controllers/orderController")
 const MW = require("../Middleware/auth")
 
 
@@ -30,7 +31,7 @@ router.put("/products/:productId" , product.updateProductById)
 router.delete("/products/:productId" , product.deleteProducts)
 
 
-//-------------------------------cart Api------------------------------------------//
+//-------------------------------------cart Api---------------------------------------------------//
 
 router.post("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.createCart)
 
@@ -39,6 +40,11 @@ router.put ("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.upda
 router.get("/users/:userId/cart" , MW.authentication,MW.authorization,cart.getCart)
 
 router.delete("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.deleteCart)
+
+
+//---------------------------------------Order Api--------------------------------------------------//
+
+
 
 
 

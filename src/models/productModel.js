@@ -2,71 +2,30 @@ const mongoose = require('mongoose')
 
 const productSchema = new mongoose.Schema({
 
-    title: {
-        type : String,
-        required : true,
-        unique :true,
-        trim : true
-    },
+    title: { type: String, required: true, unique: true, trim: true },
 
-    description: {
-        type : String,
-        required : true,
-        trim : true
-    },
+    description: { type: String, required: true, trim: true },
 
-    price: {
-        type : Number,
-        required : true,
-        trim : true
-    },
+    price: { type: Number, required: true, trim: true },
 
-    currencyId: {
-        type : String,
-        required : true,
-        trim : true
-    },
+    currencyId: { type: String, required: true, trim: true },
 
-    currencyFormat: {
-        type : String,
-        required : true,
-        trim : true
-    },
+    currencyFormat: { type: String, required: true, trim: true },
 
-    isFreeShipping: {
-        type : Boolean,
-        default: false
-    },
+    isFreeShipping: { type: Boolean, default: false },
 
-    productImage: {
-        type : String,
-        required : true
-    },  // s3 link
+    productImage: { type: String, required: true },  // s3 link
 
-    style: {
-        type : String
-    },
+    style: { type: String },
 
-    availableSizes: {
-        type: [String],
-        required: true,
-        enum: ["S", "XS", "M", "X", "L", "XXL", "XL"]
-    },
+    availableSizes: { type: [String], required: true, enum: ["S", "XS", "M", "X", "L", "XXL", "XL"] },
 
-    installments: {
-        type : Number
-    },
+    installments: { type: Number },
 
-    deletedAt: {
-        type : Date
-    }, 
+    deletedAt: { type: Date },
 
-    isDeleted: {
-        type : Boolean,
-        default: false
-    }
-  },
+    isDeleted: { type: Boolean, default: false },
 
- { timestamps: true });
+},   { timestamps: true });
 
-    module.exports = mongoose.model('products', productSchema);  
+module.exports = mongoose.model('Product', productSchema);  

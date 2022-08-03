@@ -10,22 +10,15 @@ const createProduct = async function (req, res) {
 
 
     if (Validator.isValidBody(data)) {
-      return res.status(400).send({
-        status: false,
-        message: "Product data is required",
-      });
+      return res.status(400).send({ status: false, message: "Product data is required" });
     }
 
     //validation for title
     if (!Validator.isValidInputValue(data.title)) {
-      return res.status(400).send({
-        status: false,
-        message: "title is required"
-      });
+      return res.status(400).send({ status: false, message: "title is required" });
     }
     if (!isNaN(parseInt(data.title))) {
       return res.status(400).send({ status: false, message: "title should be string" });
-
     }
 
     if (await productModel.findOne({ title: data.title })) {
@@ -34,25 +27,16 @@ const createProduct = async function (req, res) {
 
     //validation for description
     if (!Validator.isValidInputValue(data.description)) {
-      return res.status(400).send({
-        status: false,
-        message: "Description is required "
-      });
+      return res.status(400).send({ status: false, message: "Description is required" });
     }
 
     //validation for price
     if (!data.price) {
-      return res.status(400).send({
-        status: false,
-        message: "price is required "
-      });
+      return res.status(400).send({ status: false, message: "price is required" });
     }
 
     if (isNaN(parseInt(data.price))) {
-      return res.status(400).send({
-        status: false,
-        message: "price should be Number"
-      });
+      return res.status(400).send({ status: false, message: "price should be Number" });
     }
 
     data.price = parseInt(data.price)
@@ -78,11 +62,9 @@ const createProduct = async function (req, res) {
     //validation for isFreeShipping
     if (data.isFreeShipping) {
       if (["true", "false"].indexOf(data.isFreeShipping) == -1) {
-        return res.status(400).send({
-          status: false,
-          message: "free shipping can only be true or false"
-        });
+        return res.status(400).send({ status: false, message: "free shipping can only be true or false" });
       }
+
       if (data.isFreeShipping === "True") {
         data.isFreeShipping = true
       }
@@ -93,39 +75,30 @@ const createProduct = async function (req, res) {
 
     // validations for availableSize
     if (!data.availableSizes) {
-      return res.status(400).send({
-        status: false,
-        message: "available sizes is required "
-      });
+      return res.status(400).send({ status: false, message: "available sizes is required " });
     }
+
     let sizeArr = data.availableSizes.split(",")
     if (sizeArr.length == 1) {
       if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[0]) == -1) {
-        return res.status(400).send({
-          status: false,
-          message: "available sizes should be among S,XS,M,X,L,XXL,XL"
-        });
+        return res.status(400).send({ status: false, message: "available sizes should be among S,XS,M,X,L,XXL,XL" });
       }
       data.availableSizes = sizeArr
     }
+
     else {
       for (let i = 0; i < sizeArr.length; i++) {
         if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[i]) === -1) {
-          return res.status(400).send({
-            status: false,
-            message: "available sizes should be among S,XS,M,X,L,XXL,XL"
-          });
+          return res.status(400).send({ status: false, message: "available sizes should be among S,XS,M,X,L,XXL,XL" });
         }
       }
       data.availableSizes = sizeArr
     }
 
+    //validations for installments
     if (data.installments) {
       if (isNaN(parseInt(data.installments))) {
-        return res.status(400).send({
-          status: false,
-          message: "Installments should be a number"
-        });
+        return res.status(400).send({ status: false, message: "Installments should be a number" });
       }
       data.installments = parseInt(data.installments)
     }
@@ -133,22 +106,16 @@ const createProduct = async function (req, res) {
     //validations for product image
 
     if (data.hasOwnProperty("productImage") || !files) {
-      return res
-        .status(400)
-        .send({ status: false, message: "productImage is required" });
+      return res.status(400).send({ status: false, message: "productImage is required" });
     }
     if (files.length == 0) {
-      return res
-        .status(400)
-        .send({ status: false, message: "No product image found" });
+      return res.status(400).send({ status: false, message: "No product image found" });
     }
 
     if (!Validator.isValidImageType(files[0].mimetype)) {
-      return res.status(400).send({
-        status: false,
-        message: "Only images can be uploaded (jpeg/jpg/png)",
-      });
+      return res.status(400).send({ status: false, message: "Only images can be uploaded (jpeg/jpg/png)" });
     }
+
     //uploading the photo
     let fileUrl = await uploadFile(files[0]);
     data.productImage = fileUrl;
@@ -156,28 +123,19 @@ const createProduct = async function (req, res) {
     // validation for style
     if (data.style) {
       if (!isNaN(parseInt(data.style))) {
-        return res.status(400).send({
-          status: false,
-          message: "Style can't be a string"
-        });
+        return res.status(400).send({ status: false, message: "Style can't be a string" });
       }
+
       if (typeof data.style == "string" && data.style.trim().length === 0) {
-        return res.status(400).send({
-          status: false,
-          message: "style can't be empty",
-        });
+        return res.status(400).send({ status: false, message: "style can't be empty" });
       }
     }
 
     let savedData = await productModel.create(data);
-    return res.status(201).send({
-      status: true,
-      message: "product created successfully",
-      data: savedData,
-    });
+    return res.status(201).send({ status: true, message: "product created successfully", data: savedData });
+
   } catch (err) {
-    console.log(err)
-    res.status(500).send({ status:false,message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 };
 
@@ -239,7 +197,7 @@ const getProduct = async function (req, res) {
 
     return res.status(200).send({ status: true, message: "Success", count: data.length, data: data });
   } catch (err) {
-    res.status(500).send({ status:false,message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 }
 
@@ -257,10 +215,10 @@ const getProductById = async function (req, res) {
       return res.status(404).send({ status: false, message: "No product found by this Product id" });
     }
 
-    res.status(200).send({ status: true, message: "product details",count: data.length, data: data })
+    res.status(200).send({ status: true, message: "product details", count: data.length, data: data })
 
   } catch (err) {
-    res.status(500).send({ status:false,message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 
 };
@@ -271,6 +229,8 @@ const updateProductById = async function (req, res) {
   try {
 
     let productId = req.params.productId
+
+    //validations for productId
     if (!Validator.isValidObjectId(productId)) {
       return res.status(400).send({ status: false, message: "enter valid productId" });
     }
@@ -281,10 +241,12 @@ const updateProductById = async function (req, res) {
     let data = req.body
     let files = req.files;
 
-    if(Object.keys(data).length==0){
+    //validations for body
+    if (Object.keys(data).length == 0) {
       return res.status(400).send({ status: false, message: "please give some data to update" });
     }
-    
+
+    //validations for title
     if (data.title) {
       if (!isNaN(parseInt(data.title))) {
         return res.status(400).send({ status: false, message: "title should be string" });
@@ -295,29 +257,26 @@ const updateProductById = async function (req, res) {
       }
     }
 
+    //validations for description
     if (data.description) {
       if (!isNaN(parseInt(data.description))) {
         return res.status(400).send({ status: false, message: "description should be string" });
       }
     }
 
+    //validations for price
     if (data.price) {
       if (isNaN(parseInt(data.price))) {
-        return res.status(400).send({
-          status: false,
-          message: "price should be Number"
-        });
+        return res.status(400).send({ status: false, message: "price should be Number" });
       }
-      
+
       data.price = parseInt(data.price)
     }
 
+    //validations for shipping
     if (data.isFreeShipping) {
       if (["true", "false"].indexOf(data.isFreeShipping) == -1) {
-        return res.status(400).send({
-          status: false,
-          message: "free shipping can only be true or false"
-        });
+        return res.status(400).send({ status: false, message: "free shipping can only be true or false" });
       }
       if (data.isFreeShipping === "True") {
         data.isFreeShipping = true
@@ -327,21 +286,15 @@ const updateProductById = async function (req, res) {
       }
     }
 
-
+    //validations for product image
     if (Object.keys(data).indexOf("productImage") != -1) {
 
       if (Object.keys(data).indexOf("productImage") != -1 && files.length === 0) {
-        return res.status(400).send({
-          status: false,
-          message: "no file to update",
-        });
+        return res.status(400).send({ status: false, message: "no file to update" });
       }
 
       if (!Validator.isValidImageType(files[0].mimetype)) {
-        return res.status(400).send({
-          status: false,
-          message: "Only images can be uploaded (jpeg/jpg/png)",
-        });
+        return res.status(400).send({ status: false, message: "Only images can be uploaded (jpeg/jpg/png)" });
       }
 
       //uploading the photo
@@ -349,43 +302,39 @@ const updateProductById = async function (req, res) {
       data.productImage = fileUrl;
     }
 
+    //validations for style
     if (data.style) {
       if (!isNaN(parseInt(data.style))) {
-        return res.status(400).send({
-          status: false,
-          message: "style should be string",
-        });
+        return res.status(400).send({ status: false, message: "style should be string" });
       }
+
       if (typeof data.style == "string" && data.style.trim().length === 0) {
         return res.status(400).send({
-          status: false,
-          message: "style can't be empty",
+          status: false, message: "style can't be empty"
         });
       }
     }
+
+    //validations for size
     if (data.availableSizes) {
       let sizeArr = data.availableSizes.split(",")
       for (let i = 0; i < sizeArr.length; i++) {
         if (["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(sizeArr[i]) === -1) {
-          return res.status(400).send({
-            status: false,
-            message: "available sizes should be among S,XS,M,X,L,XXL,XL"
-          });
+          return res.status(400).send({ status: false, message: "available sizes should be among S,XS,M,X,L,XXL,XL" });
         }
       }
-      data.$push = {availableSizes:sizeArr}
+      data.$push = { availableSizes: sizeArr }
       delete data.availableSizes
     }
-
+    //validations for installments
     if (data.installments) {
       if (isNaN(parseInt(data.installments))) {
-        return res.status(400).send({
-          status: false,
-          message: "Installments should be a number"
-        });
+        return res.status(400).send({ status: false, message: "Installments should be a number" });
       }
+
       data.installments = parseInt(data.installments)
     }
+
     let updatedData = await productModel.findOneAndUpdate({ _id: productId }, data, { new: true })
     res.status(200).send({ status: true, message: "updated", data: updatedData })
 
