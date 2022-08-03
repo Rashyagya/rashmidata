@@ -274,20 +274,6 @@ const updateUser = async function (req, res) {
       });
     }
 
-    let userId = req.params.userId
-
-    if (!Validator.isValidObjectId(userId)) {
-      return res.status(401).send({ status: false, message: "enter valid UserId" });
-    }
-
-    if (!await userModel.findOne({ _id: userId, isDeleted: false })) {
-      return res.status(401).send({ status: false, message: "this user doesn't exist" });
-    }
-
-    if (req.idDecoded != userId.toString()) {
-      return res.status(401).send({ status: false, message: "you aren't authorized" });
-    }
-
     if (data.fname) {
       if (data.fname.trim().length == 0) {
         return res.status(400).send({ status: false, message: "fname can't be empty" });
