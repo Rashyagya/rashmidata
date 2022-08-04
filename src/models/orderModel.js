@@ -6,6 +6,7 @@ const orderSchema = new mongoose.Schema(
         userId: { type: ObjectId, refs: "User", required: true },
 
         items: [{
+            _id: false,
             productId: { type: ObjectId, refs: "Product", required: true },
             quantity: { type: Number, required: true },
         }],
@@ -18,15 +19,13 @@ const orderSchema = new mongoose.Schema(
 
         cancellable: { type: Boolean, default: true },
 
-        status: {
-            type: String, default: "pending", enum: ["pending", "completed", "cancled"],
-        },
+        status: { type: String, default: "pending", enum: ["pending", "completed", "cancled"] },
 
-        deletedAt: { type: Date },
+        deletedAt: { type: Date, default: null },
 
         isDeleted: { type: Boolean, default: false },
 
-    }, { timestamps: true }
-)
+    }, { timestamps: true })
+
 
 module.exports = mongoose.model("Order", orderSchema);

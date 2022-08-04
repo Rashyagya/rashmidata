@@ -42,8 +42,11 @@ router.get("/users/:userId/cart" , MW.authentication,MW.authorization,cart.getCa
 router.delete("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.deleteCart)
 
 
-//---------------------------------------Order Api--------------------------------------------------//
+//-----------------------------order Api----------------------------------------------//
 
+router.post("/users/:userId/orders" ,MW.authentication,MW.authorization, order.createOrder)
+
+router.put("/users/:userId/orders" ,MW.authentication,MW.authorization, order.updateOrder)
 
 
 
