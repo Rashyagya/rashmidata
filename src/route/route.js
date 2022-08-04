@@ -31,7 +31,7 @@ router.put("/products/:productId" , product.updateProductById)
 router.delete("/products/:productId" , product.deleteProducts)
 
 
-//-------------------------------cart Api------------------------------------------//
+//-------------------------------------cart Api---------------------------------------------------//
 
 router.post("/users/:userId/cart" ,MW.authentication,MW.authorization, cart.createCart)
 

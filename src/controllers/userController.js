@@ -13,144 +13,91 @@ const createUser = async function (req, res) {
     let files = req.files;
     let { fname, lname, email, phone, password, address } = data;
 
-
+    //Validation for body
     if (Validator.isValidBody(data)) {
-      return res.status(400).send({
-        status: false,
-        message: "User data is required for registration",
-      });
+      return res.status(400).send({ status: false, message: "User data is required for registration" });
     }
 
     //validation for fname
     if (!Validator.isValidInputValue(fname)) {
-      return res.status(400).send({
-        status: false,
-        message: "First name is required"
-      });
+      return res.status(400).send({ status: false, message: "First name is required" });
     }
     if (!Validator.isValidOnlyCharacters(fname)) {
-      return res.status(400).send({
-        status: false,
-        message: "first name should contain only alphabets"
-      });
+      return res.status(400).send({ status: false, message: "first name should contain only alphabets" });
     }
 
     //validation for lname
     if (!Validator.isValidInputValue(lname)) {
-      return res.status(400).send({
-        status: false,
-        message: "Last name is required "
-      });
+      return res.status(400).send({ status: false, message: "Last name is required" });
     }
     if (!Validator.isValidOnlyCharacters(lname)) {
-      return res.status(400).send({
-        status: false,
-        message: "last name should contain only alphabets"
-      });
+      return res.status(400).send({ status: false, message: "last name should contain only alphabets" });
     }
-
     //validation for email
     if (!Validator.isValidInputValue(email)) {
-      return res.status(400).send({
-        status: false,
-        message: "email is required "
-      });
+      return res.status(400).send({ status: false, message: "email is required" });
     }
     if (!Validator.isValidEmail(email)) {
-      return res.status(400).send({
-        status: false,
-        message:
-          "give a valid email address"
-      });
+      return res.status(400).send({ status: false, message: "Enter valid email" });
     }
 
     if (await userModel.findOne({ email })) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Email address already exist" });
+      return res.status(400).send({ status: false, message: "Email address already exist" });
     }
 
     //validations for phone
     if (!Validator.isValidInputValue(phone)) {
-      return res.status(400).send({
-        status: false,
-        message: "phone is required "
-      });
+      return res.status(400).send({ status: false, message: "phone is required " });
     }
     if (!Validator.isValidPhone(phone)) {
-      return res.status(400).send({
-        status: false,
-        message: "give a PAN India mobile number",
-      });
+      return res.status(400).send({ status: false, message: "give a PAN India mobile number" });
     }
     if (await userModel.findOne({ phone })) {
-      return res
-        .status(400)
-        .send({ status: false, message: "phone number already exist" });
+      return res.status(400).send({ status: false, message: "phone number already exist" });
     }
 
     // validations for password
     if (!Validator.isValidInputValue(password)) {
-      return res.status(400).send({
-        status: false,
-        message: "password is required ",
-      });
+      return res.status(400).send({ status: false, message: "password is required " });
     }
     if (!Validator.isValidPassword(password)) {
-      return res.status(400).send({
-        status: false,
-        message:
-          "Password should be of 8 to 15 characters"
-      });
+      return res.status(400).send({ status: false, message: "Password should be of 8 to 15 characters" });
     }
 
     //validations for address
     if (!Validator.isValidAddress(address)) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Address is required!" });
+      return res.status(400).send({ status: false, message: "Address is required!" });
     }
 
     let addresses = ["shipping", "billing"];
     let locations = ["street", "city", "pincode"];
     for (let i = 0; i < addresses.length; i++) {
       if (!data.address[addresses[i]])
-        return res
-          .status(400)
-          .send({ status: false, message: `${addresses[i]} is mandatory` });
+        return res.status(400).send({ status: false, message: `${addresses[i]} is mandatory` });
+
       for (let j = 0; j < locations.length; j++) {
         if (!data.address[addresses[i]][locations[j]])
           return res.status(400).send({ status: false, message: `In  ${addresses[i]}, ${locations[j]} is mandatory` });
       }
 
       if (!Validator.isValidOnlyCharacters(data.address[addresses[i]].city)) {
-        return res.status(400).send({
-          status: false,
-          message: `In ${addresses[i]} , city is invalid`,
-        });
+        return res.status(400).send({ status: false, message: `In ${addresses[i]} , city is invalid`, });
       }
 
       if (!Validator.isValidPincode(data.address[addresses[i]].pincode)) {
-        return res.status(400).send({
-          status: false,
-          message: `In ${addresses[i]} , pincode is invalid`,
-        });
+        return res.status(400).send({ status: false, message: `In ${addresses[i]} , pincode is invalid` });
       }
     }
 
     //validations for profile image
     if (!files || files.length == 0) {
-      return res
-        .status(400)
-        .send({ status: false, message: "No profile image found" });
+      return res.status(400).send({ status: false, message: "No profile image found" });
     }
 
     if (!Validator.isValidImageType(files[0].mimetype)) {
-      return res.status(400).send({
-        status: false,
-        message: "Only images can be uploaded (jpeg/jpg/png)",
-      });
+      return res.status(400).send({ status: false, message: "Only images can be uploaded (jpeg/jpg/png)" });
     }
+
     //uploading the photo
     let fileUrl = await uploadFile(files[0]);
     data.profileImage = fileUrl;
@@ -161,13 +108,10 @@ const createUser = async function (req, res) {
 
     //creating the data
     let savedData = await userModel.create(data);
-    return res.status(201).send({
-      status: true,
-      message: "User created successfully",
-      data: savedData,
-    });
+    return res.status(201).send({ status: true, message: "User created successfully", data: savedData });
+
   } catch (err) {
-    res.status(500).send({ status:false,message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 };
 
@@ -184,34 +128,28 @@ const loginUser = async function (req, res) {
     }
     let { email, password } = data;
 
-
+    //Validation for Email
     if (!Validator.isValidInputValue(email) || !Validator.isValidEmail(email)) {
-      return res.status(400).send({
-        status: false,
-        message: "Email is required and should be a valid email",
-      });
+      return res.status(400).send({ status: false, message: "Email is required and should be a valid email" });
     }
 
-    if (
-      !Validator.isValidInputValue(password) || !Validator.isValidPassword(password)
-    ) {
-      return res.status(400).send({
-        status: false,
-        message:
-          "Password is required and should contain 8 to 15 characters and must contain atleast 1 digit",
-      });
+    //Validation for password
+    if (!Validator.isValidInputValue(password)) {
+      return res.status(400).send({ status: false, message: "password is required " });
+    }
+    if (!Validator.isValidPassword(password)) {
+      return res.status(400).send({ status: false, message: "Password should be 8 to 15 characters and must contain atleast 1 digit" });
     }
 
-    let hash = await userModel
-      .findOne({ email: email })
+    let hash = await userModel.findOne({ email: email })
+
     if (hash == null) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Email does not exist" });
+      return res.status(400).send({ status: false, message: "Email does not exist" });
     }
 
     let compare = bcrypt.compare(password, hash.password)
-    console.log(compare)
+    //console.log(compare)
+
     if (!compare) {
       return res.status(401).send({ status: false, message: "Incorrect Password" });
     }
@@ -227,11 +165,11 @@ const loginUser = async function (req, res) {
     res.header("Authorization", "Bearer : " + token);
     return res.status(200).send({
       status: true,
-      message: "User logged in successfully",
-      data: { userId: hash._id, token: token },
+      message: "User logged in successfully", data: { userId: hash._id, token: token }
     });
+
   } catch (err) {
-    res.status(500).send({ status:false,message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 };
 
@@ -240,13 +178,13 @@ const loginUser = async function (req, res) {
 const getUser = async function (req, res) {
   try {
     let userId = req.params.userId;
+
     if (!Validator.isValidObjectId(userId)) {
       return res.status(401).send({ status: false, message: "enter valid UserId" });
     }
 
     if (req.idDecoded != userId.toString()) {
       return res.status(401).send({ status: false, message: "you aren't authorized" });
-
     }
 
     let data = await userModel.findOne({ _id: userId });
@@ -254,7 +192,7 @@ const getUser = async function (req, res) {
     res.status(200).send({ status: true, message: "User profile details", data: data })
 
   } catch (err) {
-    res.status(500).send({ status:false,message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 };
 
@@ -264,16 +202,16 @@ const getUser = async function (req, res) {
 
 const updateUser = async function (req, res) {
   try {
+   
+    let userId = req.params.userId
     let data = JSON.parse(JSON.stringify(req.body));
     let files = req.files;
     // console.log(data)
     if (Validator.isValidBody(data)) {
-      return res.status(400).send({
-        status: false,
-        message: "User data is required to update",
-      });
+      return res.status(400).send({ status: false, message: "User data is required to update" });
     }
 
+    //Validation for fname
     if (data.fname) {
       if (data.fname.trim().length == 0) {
         return res.status(400).send({ status: false, message: "fname can't be empty" });
@@ -282,6 +220,8 @@ const updateUser = async function (req, res) {
         return res.status(400).send({ status: false, message: "fname must be alphabets" });
       }
     }
+
+    //Validation for lname    
     if (data.lname) {
       if (data.lname.trim().length == 0) {
         return res.status(400).send({ status: false, message: "lname can't be empty" });
@@ -291,6 +231,7 @@ const updateUser = async function (req, res) {
       }
     }
 
+    //Validation for Email
     if (data.email) {
       if (data.email.trim().length == 0) {
         return res.status(400).send({ status: false, message: "email can't be empty" });
@@ -302,16 +243,17 @@ const updateUser = async function (req, res) {
         return res.status(400).send({ status: false, message: "email already exists" });
       }
     }
+
+    //Validation for image    
     if (files.length === 1) {
       if (!Validator.isValidImageType(files[0].mimetype)) {
-        return res.status(400).send({
-          status: false,
-          message: "Only images can be uploaded (jpeg/jpg/png)",
-        });
+        return res.status(400).send({status: false,message: "Only images can be uploaded (jpeg/jpg/png)"});
       }
       let url = await uploadFile(files[0])
       data.profileImage = url
     }
+
+    //Validation for phone    
     if (data.phone) {
       if (data.phone.trim().length == 0) {
         return res.status(400).send({ status: false, message: "phone can't be empty" });
@@ -323,6 +265,8 @@ const updateUser = async function (req, res) {
         return res.status(400).send({ status: false, message: "phone already exists" });
       }
     }
+
+    //Validation for password    
     if (data.password) {
       if (data.email.trim().length == 0) {
         return res.status(400).send({ status: false, message: "password can't be empty" });
@@ -334,14 +278,17 @@ const updateUser = async function (req, res) {
       data.password = encryptedPassword;
 
     }
+    //Validation for address    
     if ("address" in data) {
       console.log(data.address)
-      if(typeof data.address != "object"){
+      if (typeof data.address != "object") {
         return res.status(400).send({ status: false, message: "address shoud be an object" })
       }
       if (Object.keys(data.address) == 0) {
         return res.status(400).send({ status: false, message: "please give atleast one thing to update in address" })
       }
+
+      // Validations for shipping address
       if ("shipping" in data.address) {
         if (Object.keys(data.address.shipping) == 0) {
           return res.status(400).send({ status: false, message: "please give atleast one thing to update in shipping" })
@@ -350,33 +297,29 @@ const updateUser = async function (req, res) {
           if (typeof data.address.shipping.street != "string") {
             return res.status(400).send({ status: false, message: "street should be a string" })
           }
-          if(data.address.shipping.street.trim().length===0){
+          if (data.address.shipping.street.trim().length === 0) {
             return res.status(400).send({ status: false, message: "street can't be empty" })
-  
+
           }
         }
-        
+
         if ("city" in data.address.shipping) {
           if (typeof data.address.shipping.city != "string") {
             return res.status(400).send({ status: false, message: "city should be a string" })
           }
-          if(data.address.shipping.city.trim().length===0){
+          if (data.address.shipping.city.trim().length === 0) {
             return res.status(400).send({ status: false, message: "city can't be empty" })
-  
           }
         }
+
         if ("pincode" in data.address.shipping) {
-          if (typeof data.address.shipping.pincode != "number") {
-            return res.status(400).send({ status: false, message: "street should be a number" })
-          }
           if (!Validator.isValidPincode(data.address.shipping.pincode)) {
-            return res.status(400).send({
-              status: false,
-              message: `pincode is invalid`,
-            });
+            return res.status(400).send({ status: false, message: "pincode is invalid" });
           }
         }
       }
+
+      //validations for Billing address      
       if ("billing" in data.address) {
         if (Object.keys(data.address.billing) == 0) {
           return res.status(400).send({ status: false, message: "please give atleast one thing to update in shipping" })
@@ -385,29 +328,23 @@ const updateUser = async function (req, res) {
           if (typeof data.address.billing.street != "string") {
             return res.status(400).send({ status: false, message: "street should be a string" })
           }
-          if(data.address.billing.street.trim().length===0){
+          if (data.address.billing.street.trim().length === 0) {
             return res.status(400).send({ status: false, message: "street can't be empty" })
-  
           }
         }
+
         if ("city" in data.address.billing) {
           if (typeof data.address.billing.city != "string") {
             return res.status(400).send({ status: false, message: "city should be a string" })
           }
-          if(data.address.billing.city.trim().length===0){
-            return res.status(400).send({ status: false, message: "street can't be empty" })
-  
+          if (data.address.billing.city.trim().length === 0) {
+            return res.status(400).send({ status: false, message: "city can't be empty" })
           }
         }
+        
         if ("pincode" in data.address.billing) {
-          if (typeof data.address.billing.pincode != "number") {
-            return res.status(400).send({ status: false, message: "street should be a number" })
-          }
           if (!Validator.isValidPincode(data.address.billing.pincode)) {
-            return res.status(400).send({
-              status: false,
-              message: `pincode is invalid`,
-            });
+            return res.status(400).send({ status: false, message: "pincode is invalid" });
           }
         }
       }
@@ -415,22 +352,11 @@ const updateUser = async function (req, res) {
     // console.log(data)
 
     let updatedData = await userModel.findOneAndUpdate({ _id: userId }, data, { new: true })
-    // console.log(updatedData)
-    res.status(200).send({
-      status: true,
-      message: 'Success',
-      data: updatedData
-    })
-
-
+    res.status(200).send({ status: true, message: 'Success', data: updatedData })
 
   } catch (err) {
-    res.status(500).send({ status:false,message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 };
-
-
-
-
 
 module.exports = { createUser, loginUser, getUser, updateUser };

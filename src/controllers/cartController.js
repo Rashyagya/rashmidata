@@ -9,14 +9,11 @@ const createCart = async function (req, res) {
     try {
         const body = req.body;
         const userId = req.params.userId
-        //request body validations
 
+        //request body validations
         if (Validator.isValidBody(body)) {
-            return res.status(400).send({
-              status: false,
-              message: "body cant be empty",
-            });
-          }
+            return res.status(400).send({ status: false, message: "body cant be empty" });
+        }
 
         //productId validations
         if (!body.productId) {
@@ -82,7 +79,7 @@ const createCart = async function (req, res) {
 
     } catch (err) {
         console.log(err)
-        res.status(500).send({ status:false,message: err.message });
+        res.status(500).send({ status: false, message: err.message });
     }
 };
 
@@ -96,40 +93,38 @@ const updateCart = async function (req, res) {
         let body = req.body
         const userId = req.params.userId
 
+        //validations for body
         if (Validator.isValidBody(body)) {
-            return res.status(400).send({
-              status: false,
-              message: "body cant be empty",
-            });
-          }
+            return res.status(400).send({ status: false, message: "body cant be empty" });
+        }
 
+        //validations for productId
         if (!body.productId) {
             return res.status(400).send({ status: false, message: `please give a productId` });
-
         }
+
         if (!Validator.isValidObjectId(body.productId)) {
             return res.status(400).send({ status: false, message: "give a valid productId" });
-
         }
-        const findproductId = await productModel.findById({ _id: body.productId });
 
+        const findproductId = await productModel.findById({ _id: body.productId });
         if (!findproductId) {
             return res.status(404).send({ status: false, message: `User doesn't exist by ${body.productId}` });
         }
 
+        //validations for remove product
         if (!Object.keys(body).includes("removeProduct")) {
             return res.status(400).send({ status: false, message: `give removeProduct in body as a key` });
-
         }
 
         if (typeof body.removeProduct != "number") {
             return res.status(400).send({ status: false, message: `removeProduct should be a number` });
-
         }
+
         if ([1, 0].indexOf(body.removeProduct) === -1) {
             return res.status(400).send({ status: false, message: "removeProduct can only be 1 0r 0" });
-
         }
+
         if (body.removeProduct === 1) {
             let cart = await cartModel.findOne({ userId: userId , isDeleted:false})
             if (!cart) return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
@@ -150,6 +145,7 @@ const updateCart = async function (req, res) {
             let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
             res.status(200).send({ status: true, message: "Success", data: changedCart })
         }
+
         else {
             let cart = await cartModel.findOne({ userId: userId ,isDeleted:false})
             if (!cart) return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
@@ -165,10 +161,9 @@ const updateCart = async function (req, res) {
             }
         }
 
-
     } catch (err) {
         console.log(err)
-        res.status(500).send({ status:false,message: err.message });
+        res.status(500).send({ status: false, message: err.message });
     }
 };
 
@@ -185,10 +180,10 @@ const getCart = async function (req, res) {
         }
         
 
-        res.status(200).send({ status: true,message:"Success", data: data })
+        res.status(200).send({ status: true, message: "Success", data: data })
 
     } catch (err) {
-        res.status(500).send({ status:false,message: err.message });
+        res.status(500).send({ status: false, message: err.message });
     }
 };
 
@@ -212,7 +207,7 @@ const deleteCart = async function (req, res) {
         res.status(204).send({ status: true, message: "Cart successfully removed", data: deletedData })
 
     } catch (err) {
-        res.status(500).send({ status:false,message: err.message });
+        res.status(500).send({ status: false, message: err.message });
     }
 };
 
