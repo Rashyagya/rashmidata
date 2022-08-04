@@ -3,70 +3,72 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const orderSchema = new mongoose.Schema(
     {
-        userId: 
-         {
-            type : ObjectId,
-             refs : "user",
-             required : true
-            },
+        userId:
+        {
+            type: ObjectId,
+            refs: "User",
+            required: true
+        },
 
-         items: [{
-                 productId: 
-               {
-                   type : ObjectId,
-                  refs : "product",
-                  required : true 
-                },
-
-                 quantity: 
-              {
-                 type : Number, 
-                 required : true
-                 },
-
-             }],
-
-         totalPrice: 
-                {
-                 type : Number,
-                 required : true
-                 },
-
-        totalItems: 
+        items: [{
+            _id:false,
+            productId:
             {
-                type : Number,
-                required : true
+                type: ObjectId,
+                ref: "Product",
+                required: true
             },
 
-        totalQuantity: 
+            quantity:
             {
-                type : Number,
-                required : true
+                type: Number,
+                required: true
             },
 
-         cancellable: 
-            {
-                type : boolean, 
-                default: true
-            },
+        }],
 
-         status: 
-            {
-                type : String, 
-                default: "pending", 
-                enum : ["pending", "completed", "cancled"]
-            },
+        totalPrice:
+        {
+            type: Number,
+            required: true
+        },
 
-         deletedAt: 
-            {
-                type : Date
-            },
+        totalItems:
+        {
+            type: Number,
+            required: true
+        },
 
-         isDeleted: 
-            {
-                type : boolean,
-                 default: false
-            },
+        totalQuantity:
+        {
+            type: Number,
+            required: true
+        },
+
+        cancellable:
+        {
+            type: Boolean,
+            default: true
+        },
+
+        status:
+        {
+            type: String,
+            default: "pending",
+            enum: ["pending", "completed", "cancled"]
+        },
+
+        deletedAt:
+        {
+            type: Date,
+            default:null
+        },
+
+        isDeleted:
+        {
+            type: Boolean,
+            default: false
+        },
     }
 )
 
