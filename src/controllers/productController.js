@@ -132,7 +132,7 @@ const createProduct = async function (req, res) {
     }
 
     let savedData = await productModel.create(data);
-    return res.status(201).send({ status: true, message: "product created successfully", data: savedData });
+    return res.status(201).send({ status: true, message: "Success", data: savedData });
 
   } catch (err) {
     res.status(500).send({ status: false, message: err.message });
@@ -175,7 +175,7 @@ const getProduct = async function (req, res) {
 
     let data = await productModel.find(getproduct).select({ _v: 0 })//.sort(priceSort)
     if (data.length == 0) {
-      return res.status(400).send({ status: false, message: "NO data found" });
+      return res.status(404).send({ status: false, message: "NO data found" });
     }
     if (filter.priceSort) {
       priceSort = priceSort.toString().trim()
@@ -215,7 +215,7 @@ const getProductById = async function (req, res) {
       return res.status(404).send({ status: false, message: "No product found by this Product id" });
     }
 
-    res.status(200).send({ status: true, message: "product details", count: data.length, data: data })
+    res.status(200).send({ status: true, message: "Success", count: data.length, data: data })
 
   } catch (err) {
     res.status(500).send({ status: false, message: err.message });
