@@ -90,6 +90,10 @@ const createUser = async function (req, res) {
     }
 
     //validations for profile image
+
+    // if(Object.keys(data).indexOf("profileImage")===-1||){
+    //   return res.status(400).send({ status: false, message: "profile image is required" });
+    // }
     if (!files || files.length == 0) {
       return res.status(400).send({ status: false, message: "No profile image found" });
     }
@@ -108,7 +112,7 @@ const createUser = async function (req, res) {
 
     //creating the data
     let savedData = await userModel.create(data);
-    return res.status(201).send({ status: true, message: "User created successfully", data: savedData });
+    return res.status(201).send({ status: true, message: "Success", data: savedData });
 
   } catch (err) {
     res.status(500).send({ status: false, message: err.message });
@@ -147,8 +151,7 @@ const loginUser = async function (req, res) {
       return res.status(400).send({ status: false, message: "Email does not exist" });
     }
 
-    let compare = bcrypt.compare(password, hash.password)
-    //console.log(compare)
+    let compare = await bcrypt.compare(password, hash.password)
 
     if (!compare) {
       return res.status(401).send({ status: false, message: "Incorrect Password" });
@@ -210,7 +213,7 @@ const updateUser = async function (req, res) {
     if (Validator.isValidBody(data)) {
       return res.status(400).send({ status: false, message: "User data is required to update" });
     }
-
+    let user = await userModel.findOne({ _id: userId, isDeleted: false })
     //Validation for fname
     if (data.fname) {
       if (data.fname.trim().length == 0) {
@@ -280,13 +283,14 @@ const updateUser = async function (req, res) {
     }
     //Validation for address    
     if ("address" in data) {
-      console.log(data.address)
+      console.log(data)
       if (typeof data.address != "object") {
         return res.status(400).send({ status: false, message: "address shoud be an object" })
       }
       if (Object.keys(data.address) == 0) {
         return res.status(400).send({ status: false, message: "please give atleast one thing to update in address" })
       }
+      let address = user.address
 
       // Validations for shipping address
       if ("shipping" in data.address) {
@@ -299,9 +303,10 @@ const updateUser = async function (req, res) {
           }
           if (data.address.shipping.street.trim().length === 0) {
             return res.status(400).send({ status: false, message: "street can't be empty" })
-
           }
+          address.shipping.street=data.address.shipping.street
         }
+        console.log(address)
 
         if ("city" in data.address.shipping) {
           if (typeof data.address.shipping.city != "string") {
@@ -310,12 +315,16 @@ const updateUser = async function (req, res) {
           if (data.address.shipping.city.trim().length === 0) {
             return res.status(400).send({ status: false, message: "city can't be empty" })
           }
+          address["shipping"]["city"]=data.address.shipping.city
+
         }
 
         if ("pincode" in data.address.shipping) {
           if (!Validator.isValidPincode(data.address.shipping.pincode)) {
             return res.status(400).send({ status: false, message: "pincode is invalid" });
           }
+          address["shipping"]["pincode"]=data.address.shipping.pincode
+
         }
       }
 
@@ -331,6 +340,8 @@ const updateUser = async function (req, res) {
           if (data.address.billing.street.trim().length === 0) {
             return res.status(400).send({ status: false, message: "street can't be empty" })
           }
+          address["billing"]["street"]=data.address.billing.street
+
         }
 
         if ("city" in data.address.billing) {
@@ -340,21 +351,27 @@ const updateUser = async function (req, res) {
           if (data.address.billing.city.trim().length === 0) {
             return res.status(400).send({ status: false, message: "city can't be empty" })
           }
+          address["billing"]["city"]=data.address.billing.city
+
         }
         
         if ("pincode" in data.address.billing) {
           if (!Validator.isValidPincode(data.address.billing.pincode)) {
             return res.status(400).send({ status: false, message: "pincode is invalid" });
           }
+          address["billing"]["pincode"]=data.address.billing.pincode
         }
       }
+      data.address = address
     }
+
     // console.log(data)
 
     let updatedData = await userModel.findOneAndUpdate({ _id: userId }, data, { new: true })
     res.status(200).send({ status: true, message: 'Success', data: updatedData })
 
   } catch (err) {
+    console.log(err);
     res.status(500).send({ status: false, message: err.message });
   }
 };
