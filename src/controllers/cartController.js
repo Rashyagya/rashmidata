@@ -128,6 +128,7 @@ const updateCart = async function (req, res) {
 
             if (!cart)
                 return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
+            if (!cart) return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
 
             // console.log(cart)
             let totalItems = cart.totalItems
@@ -151,6 +152,7 @@ const updateCart = async function (req, res) {
 
             if (!cart)
                 return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
+            if (!cart) return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
             // console.log(cart)
 
             for (let i = 0; i < cart.items.length; i++) {

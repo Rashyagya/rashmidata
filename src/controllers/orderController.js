@@ -60,7 +60,7 @@ const createOrder = async function (req, res) {
         //     cart.status = body.status
         // }
         let createdOrder = await orderModel.create(cart)
-        await cartModel.findOneAndUpdate({ _id: body.cartId }, { items: [], totalPrice: 0, totalItems: 0 }, { new: true })
+        await cartModel.findOneAndUpdate({ _id: body.cartId }, { items: [], totalPrice: 0, totalItems: 0 })
         res.status(201).send({ status: true, message: "Success", data: createdOrder })
 
     }

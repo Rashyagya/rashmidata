@@ -36,15 +36,15 @@ const authorization = async function (req, res, next) {
     let userId = req.params.userId
 
     if (!Validator.isValidObjectId(userId)) {
-      return res.status(401).send({ status: false, message: "enter valid UserId" });
+      return res.status(400).send({ status: false, message: "enter valid UserId" });
     }
 
     if (!await userModel.findOne({ _id: userId, isDeleted: false })) {
-      return res.status(401).send({ status: false, message: "this user doesn't exist" });
+      return res.status(404).send({ status: false, message: "this user doesn't exist" });
     }
 
     if (req.idDecoded != userId.toString()) {
-      return res.status(401).send({ status: false, message: "you aren't authorized" });
+      return res.status(403).send({ status: false, message: "you aren't authorized" });
     }
     next()
 
