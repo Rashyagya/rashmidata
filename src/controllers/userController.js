@@ -280,7 +280,7 @@ const updateUser = async function (req, res) {
     }
     //Validation for address    
     if ("address" in data) {
-      console.log(data.address)
+     // console.log(data.address)
       if (typeof data.address != "object") {
         return res.status(400).send({ status: false, message: "address shoud be an object" })
       }
