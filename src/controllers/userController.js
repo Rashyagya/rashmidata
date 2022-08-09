@@ -9,7 +9,7 @@ const Validator = require("../validation/validation");
 const createUser = async function (req, res) {
   try {
     let data = JSON.parse(JSON.stringify(req.body));
-    console.log(data)
+    //console.log(data)
     let files = req.files;
     let { fname, lname, email, phone, password, address } = data;
 
@@ -77,7 +77,7 @@ const createUser = async function (req, res) {
 
       for (let j = 0; j < locations.length; j++) {
         if (!data.address[addresses[i]][locations[j]])
-          return res.status(400).send({ status: false, message: `In  ${addresses[i]}, ${locations[j]} is mandatory` });
+          return res.status(400).send({ status: false, message: `In ${addresses[i]}, ${locations[j]} is mandatory` });
       }
 
       if (!Validator.isValidOnlyCharacters(data.address[addresses[i]].city)) {
@@ -125,11 +125,9 @@ const loginUser = async function (req, res) {
   try {
     let data = req.body;
     if (Validator.isValidBody(data)) {
-      return res.status(400).send({
-        status: false,
-        message: "User data is required for login",
-      });
+      return res.status(400).send({status: false,message: "User data is required for login"});
     }
+    
     let { email, password } = data;
 
     //Validation for Email
@@ -307,7 +305,7 @@ const updateUser = async function (req, res) {
           }
           address.shipping.street=data.address.shipping.street
         }
-        console.log(address)
+       // console.log(address)
 
         if ("city" in data.address.shipping) {
           if (typeof data.address.shipping.city != "string") {
@@ -372,7 +370,6 @@ const updateUser = async function (req, res) {
     res.status(200).send({ status: true, message: 'Success', data: updatedData })
 
   } catch (err) {
-    console.log(err);
     res.status(500).send({ status: false, message: err.message });
   }
 };

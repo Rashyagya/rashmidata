@@ -1,13 +1,15 @@
 const aws = require("aws-sdk");
 
-/* ------------------------------------------------aws config -------------------------------------------------------- */
+// -----------------------------------------aws config ------------------------------------//
+
 aws.config.update({
     accessKeyId: "AKIAY3L35MCRVFM24Q7U",
     secretAccessKey: "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",
     region: "ap-south-1"
 })
 
-/* ------------------------------------------------aws fileUpload-------------------------------------------------------- */
+//---------------------------------------aws fileUpload------------------------------------//
+
 let uploadFile = async (file) => {
     return new Promise(function (resolve, reject) {
         let s3 = new aws.S3({ apiVersion: '2006-03-01' }); 
@@ -19,7 +21,6 @@ let uploadFile = async (file) => {
             Body: file.buffer
         }
 
-
         s3.upload(uploadParams, function (err, data) {
             if (err) {
                 return reject({ "error": err })
@@ -29,4 +30,5 @@ let uploadFile = async (file) => {
         })
     })
 }
+
 module.exports.uploadFile = uploadFile

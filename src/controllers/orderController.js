@@ -13,7 +13,8 @@ const createOrder = async function (req, res) {
         if (!Validator.isValidObjectId(body.cartId)) {
             return res.status(400).send({ status: false, message: "please provide a valid cart ObjectId" })
         }
-        let cartDetails = await cartModel.findOne({ _id: body.cartId }).select({ _id: 0, userId: 1, items: 1, totalPrice: 1, totalItems: 1 })
+        let cartDetails = await cartModel.findOne({ _id: body.cartId })
+                           .select({ _id: 0, userId: 1, items: 1, totalPrice: 1, totalItems: 1 })
 
         if (!cartDetails) {
             return res.status(404).send({ status: false, message: "no cart found" })

@@ -63,7 +63,9 @@ const createCart = async function (req, res) {
                 } else {
                     cart.items[i].quantity += 1
                 }
-                let createdCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, totalPrice: cart.totalPrice + totalPrice }, { new: true })
+                let createdCart = await cartModel.findOneAndUpdate({ userId: userId }, 
+                    { "items": cart.items, totalPrice: cart.totalPrice + totalPrice }, { new: true })
+                    
                 return res.status(201).send({ status: true, message: "Success", data: createdCart })
 
             }
@@ -143,7 +145,8 @@ const updateCart = async function (req, res) {
                 }
             }
             let totalPrice = cart.totalPrice - findproductId.price
-            let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
+            let changedCart = await cartModel.findOneAndUpdate({ userId: userId },
+                 { "items": cart.items, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
             res.status(200).send({ status: true, message: "Success", data: changedCart })
         }
 
@@ -152,7 +155,7 @@ const updateCart = async function (req, res) {
 
             if (!cart)
                 return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
-            if (!cart) return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
+            //if (!cart) return res.status(404).send({ status: false, message: `no cart available for ${userId}` });
             // console.log(cart)
 
             for (let i = 0; i < cart.items.length; i++) {
@@ -160,7 +163,8 @@ const updateCart = async function (req, res) {
                     let totalPrice = cart.totalPrice - (findproductId.price * cart.items[i].quantity)
                     cart.items.splice(i, 1)
                     let totalItems = cart.totalItems - 1
-                    let changedCart = await cartModel.findOneAndUpdate({ userId: userId }, { "items": cart.items, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
+                    let changedCart = await cartModel.findOneAndUpdate({ userId: userId },
+                         { "items": cart.items, totalPrice: totalPrice, totalItems: totalItems }, { new: true })
                     res.status(200).send({ status: true, message: "Success", data: changedCart })
                 }
             }

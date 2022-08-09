@@ -309,9 +309,7 @@ const updateProductById = async function (req, res) {
       }
 
       if (typeof data.style == "string" && data.style.trim().length === 0) {
-        return res.status(400).send({
-          status: false, message: "style can't be empty"
-        });
+        return res.status(400).send({status: false, message: "style can't be empty"});
       }
     }
 
